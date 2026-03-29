@@ -28,6 +28,9 @@
       "name": "Expo Showcase",
       "shortName": "Showcase",
       "description": "A comprehensive demo of Expo widgets and APIs"
+    },
+    "experiments": {
+      "baseUrl": "/test-expo-app"
     }
   }
 }
