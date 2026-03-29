@@ -25,7 +25,7 @@ import Constants from 'expo-constants';
 import * as Device from 'expo-device';
 import * as Network from 'expo-network';
 import { Ionicons, MaterialIcons, FontAwesome5, AntDesign } from '@expo/vector-icons';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -503,24 +503,26 @@ export default function App() {
   };
 
   return (
-    <SafeAreaView style={styles.root}>
-      <StatusBar style="light" />
-      <LinearGradient colors={['#1e1b4b', '#312e81']} style={styles.topBar}>
-        <Text style={styles.topBarTitle}>⚡ Expo Showcase</Text>
-      </LinearGradient>
-      <View style={styles.tabBar}>
-        {TABS.map((tab) => (
-          <TouchableOpacity
-            key={tab}
-            style={[styles.tabItem, activeTab === tab && styles.tabItemActive]}
-            onPress={() => setActiveTab(tab)}
-          >
-            <Text style={[styles.tabText, activeTab === tab && styles.tabTextActive]}>{tab}</Text>
-          </TouchableOpacity>
-        ))}
-      </View>
-      <View style={{ flex: 1 }}>{renderTab()}</View>
-    </SafeAreaView>
+    <SafeAreaProvider>
+      <SafeAreaView style={styles.root}>
+        <StatusBar style="light" />
+        <LinearGradient colors={['#1e1b4b', '#312e81']} style={styles.topBar}>
+          <Text style={styles.topBarTitle}>⚡ Expo Showcase</Text>
+        </LinearGradient>
+        <View style={styles.tabBar}>
+          {TABS.map((tab) => (
+            <TouchableOpacity
+              key={tab}
+              style={[styles.tabItem, activeTab === tab && styles.tabItemActive]}
+              onPress={() => setActiveTab(tab)}
+            >
+              <Text style={[styles.tabText, activeTab === tab && styles.tabTextActive]}>{tab}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+        <View style={{ flex: 1 }}>{renderTab()}</View>
+      </SafeAreaView>
+    </SafeAreaProvider>
   );
 }
 
