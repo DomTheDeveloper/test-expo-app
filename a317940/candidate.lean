@@ -132,11 +132,11 @@ noncomputable def Qseries : PowerSeries ℚ := Aseries * Aseries
 
 theorem Aseries_derivative :
     PowerSeries.derivative ℚ Aseries =
-      (PowerSeries.C (1 / 2 : ℚ) * Dseries) * Aseries := by
+      PowerSeries.C (1 / 2 : ℚ) * (Dseries * Aseries) := by
   ext n
   rw [PowerSeries.coeff_derivative]
   simp only [Aseries, Dseries, PowerSeries.coeff_mk,
-    PowerSeries.coeff_mul, PowerSeries.coeff_C_mul,
+    PowerSeries.coeff_C_mul, PowerSeries.coeff_mul,
     Nat.sum_antidiagonal_eq_sum_range_succ_mk]
   rw [a_succ]
   have hn : (n + 1 : ℚ) ≠ 0 := by positivity
@@ -146,7 +146,23 @@ theorem Aseries_derivative :
 theorem Qseries_derivative :
     PowerSeries.derivative ℚ Qseries = Dseries * Qseries := by
   unfold Qseries
-  rw [map_mul, Aseries_derivative, Aseries_derivative]
-  ring
+  change PowerSeries.derivativeFun (Aseries * Aseries) =
+    Dseries * (Aseries * Aseries)
+  rw [PowerSeries.derivativeFun_mul]
+  simp only [smul_eq_mul]
+  have hA := Aseries_derivative
+  change PowerSeries.derivativeFun Aseries =
+    PowerSeries.C (1 / 2 : ℚ) * (Dseries * Aseries) at hA
+  rw [hA]
+  have hC :
+      (PowerSeries.C (1 / 2 : ℚ) : PowerSeries ℚ) +
+        PowerSeries.C (1 / 2 : ℚ) = 1 := by
+    norm_num
+  calc
+    Aseries * (PowerSeries.C (1 / 2 : ℚ) * (Dseries * Aseries)) +
+        Aseries * (PowerSeries.C (1 / 2 : ℚ) * (Dseries * Aseries)) =
+      ((PowerSeries.C (1 / 2 : ℚ) : PowerSeries ℚ) +
+        PowerSeries.C (1 / 2 : ℚ)) * (Dseries * (Aseries * Aseries)) := by ring
+    _ = Dseries * (Aseries * Aseries) := by rw [hC, one_mul]
 
 end A317940Verified
