@@ -16,7 +16,8 @@ theorem four_pow_mul_b (n : ℕ) :
               ring
         _ = (4 : ℚ) ^ r * (2 : ℚ) ^ (A005187 r) := by rw [ih]
         _ = (2 : ℚ) ^ (2 * r) * (2 : ℚ) ^ (A005187 r) := by rw [h4]
-        _ = (2 : ℚ) ^ (2 * r + A005187 r) := by rw [pow_add]
+        _ = (2 : ℚ) ^ (2 * r + A005187 r) :=
+          (pow_add (2 : ℚ) (2 * r) (A005187 r)).symm
   | h_odd r ih =>
       rw [b_odd, A005187_rec, show (2 * r + 1) / 2 = r by omega]
       calc
@@ -26,4 +27,5 @@ theorem four_pow_mul_b (n : ℕ) :
                 pow_add, pow_add, h4]
               ring
         _ = (2 : ℚ) ^ (2 * r + 1) * (2 : ℚ) ^ (A005187 r) := by rw [ih]
-        _ = (2 : ℚ) ^ (2 * r + 1 + A005187 r) := by rw [pow_add]
+        _ = (2 : ℚ) ^ (2 * r + 1 + A005187 r) :=
+          (pow_add (2 : ℚ) (2 * r + 1) (A005187 r)).symm
