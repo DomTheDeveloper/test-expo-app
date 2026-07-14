@@ -22,7 +22,7 @@ replace_exact(
     "      show m - (r + 1) = m - r - 1 by omega]\n",
     "  rw [Finset.sum_range_succ', add_comm]\n"
     "  congr 1\n"
-    "  ring\n",
+    "  simp\n",
 )
 
 replace_exact(
@@ -55,12 +55,12 @@ replace_exact(
 
 replace_exact(
     "      rw [← him]\n      ring\n",
-    "      rw [← him]\n      ring_nf\n",
+    "      rw [← him]\n      push_cast\n      ring\n",
 )
 
 replace_exact(
     "          rw [← him]\n          ring\n",
-    "          rw [← him]\n          ring_nf\n",
+    "          rw [← him]\n          push_cast\n          ring\n",
 )
 
 Path("a317940/candidate.generated.lean").write_text(text)
