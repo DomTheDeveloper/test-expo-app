@@ -3,6 +3,8 @@ name: Verify generalized digital Euler positivity
 on:
   push:
     branches: [a317940-proof]
+  pull_request:
+    branches: [claude/react-native-expo-ghpages-pgXVQ]
   workflow_dispatch:
 
 permissions:
