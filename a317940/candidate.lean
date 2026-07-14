@@ -126,9 +126,9 @@ theorem b_pos (n : ℕ) : 0 < b n := by
       rw [b_odd]
       positivity
 
-noncomputable def Aseries : ℚ⟦X⟧ := PowerSeries.mk a
-noncomputable def Dseries : ℚ⟦X⟧ := PowerSeries.mk d
-noncomputable def Qseries : ℚ⟦X⟧ := Aseries * Aseries
+noncomputable def Aseries : PowerSeries ℚ := PowerSeries.mk a
+noncomputable def Dseries : PowerSeries ℚ := PowerSeries.mk d
+noncomputable def Qseries : PowerSeries ℚ := Aseries * Aseries
 
 theorem Aseries_derivative :
     PowerSeries.derivative ℚ Aseries =
