@@ -25,9 +25,6 @@ noncomputable def A317940_f : ℕ → ℚ :=
         else 0
       (A_n - sum_of_products) / 2
 
-open scoped BigOperators
-open Finset
-
 namespace A317940Verified
 
 def ExactSpec : Prop := ∀ n : ℕ, n > 0 → A317940_f n ≥ 0
@@ -72,7 +69,7 @@ noncomputable def a : ℕ → ℚ :=
     match n with
     | 0 => 1
     | m + 1 =>
-        (∑ i in range (m + 1), d i * IH (m - i) (by omega)) /
+        Finset.sum (range (m + 1)) (fun i => d i * IH (m - i) (by omega)) /
           (2 * (m + 1))
 
 @[simp] theorem a_zero : a 0 = 1 := by
@@ -81,7 +78,8 @@ noncomputable def a : ℕ → ℚ :=
 
 theorem a_succ (m : ℕ) :
     a (m + 1) =
-      (∑ i in range (m + 1), d i * a (m - i)) / (2 * (m + 1)) := by
+      Finset.sum (range (m + 1)) (fun i => d i * a (m - i)) /
+        (2 * (m + 1)) := by
   unfold a
   rw [WellFounded.fix_eq]
   rfl
@@ -98,7 +96,8 @@ theorem a_pos (n : ℕ) : 0 < a n := by
             intro i hi
             exact mul_nonneg (le_of_lt (d_pos i))
               (le_of_lt (ih (m - i) (by omega)))
-          have hsum : 0 < ∑ i in range (m + 1), d i * a (m - i) := by
+          have hsum :
+              0 < Finset.sum (range (m + 1)) (fun i => d i * a (m - i)) := by
             rw [sum_pos_iff_of_nonneg hnonneg]
             refine ⟨0, by simp, ?_⟩
             simpa using mul_pos (d_pos 0) (ih m (by omega))
