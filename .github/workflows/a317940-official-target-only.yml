@@ -3,6 +3,8 @@ name: A317940 official target-only audit
 on:
   push:
     branches: [a317940-axle-temp]
+  pull_request:
+    branches: [claude/react-native-expo-ghpages-pgXVQ]
   workflow_dispatch:
 
 permissions:
