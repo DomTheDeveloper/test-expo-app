@@ -22,7 +22,8 @@ replace_exact(
     "      show m - (r + 1) = m - r - 1 by omega]\n",
     "  rw [Finset.sum_range_succ', add_comm]\n"
     "  congr 1\n"
-    "  simp\n",
+    "  rw [div_eq_mul_inv]\n"
+    "  ring\n",
 )
 
 replace_exact(
