@@ -77,6 +77,16 @@ noncomputable def b : ℕ → ℚ :=
 
 theorem b_pos (n : ℕ) : 0 < b n := by sorry
 
+theorem sum_range_even_odd_even (f : ℕ → ℚ) (m : ℕ) :
+    Finset.sum (range (2 * m + 1)) f =
+      Finset.sum (range (m + 1)) (fun r => f (2 * r)) +
+      Finset.sum (range m) (fun r => f (2 * r + 1)) := by sorry
+
+theorem sum_range_even_odd_odd (f : ℕ → ℚ) (m : ℕ) :
+    Finset.sum (range (2 * m + 2)) f =
+      Finset.sum (range (m + 1)) (fun r => f (2 * r)) +
+      Finset.sum (range (m + 1)) (fun r => f (2 * r + 1)) := by sorry
+
 noncomputable def Aseries : PowerSeries ℚ := PowerSeries.mk a
 noncomputable def Dseries : PowerSeries ℚ := PowerSeries.mk d
 noncomputable def Qseries : PowerSeries ℚ := Aseries * Aseries
