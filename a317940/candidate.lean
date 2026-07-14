@@ -126,4 +126,27 @@ theorem b_pos (n : ℕ) : 0 < b n := by
       rw [b_odd]
       positivity
 
+noncomputable def Aseries : ℚ⟦X⟧ := PowerSeries.mk a
+noncomputable def Dseries : ℚ⟦X⟧ := PowerSeries.mk d
+noncomputable def Qseries : ℚ⟦X⟧ := Aseries * Aseries
+
+theorem Aseries_derivative :
+    d⁄dX ℚ Aseries =
+      (PowerSeries.C (1 / 2 : ℚ) * Dseries) * Aseries := by
+  ext n
+  rw [PowerSeries.coeff_derivative]
+  simp only [Aseries, Dseries, PowerSeries.coeff_mk,
+    PowerSeries.coeff_mul, PowerSeries.coeff_C_mul,
+    Nat.sum_antidiagonal_eq_sum_range_succ_mk]
+  rw [a_succ]
+  have hn : (n + 1 : ℚ) ≠ 0 := by positivity
+  field_simp
+  ring
+
+theorem Qseries_derivative :
+    d⁄dX ℚ Qseries = Dseries * Qseries := by
+  unfold Qseries
+  rw [map_mul, Aseries_derivative, Aseries_derivative]
+  ring
+
 end A317940Verified
