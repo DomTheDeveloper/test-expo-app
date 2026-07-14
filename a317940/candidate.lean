@@ -69,7 +69,8 @@ noncomputable def a : ℕ → ℚ :=
     match n with
     | 0 => 1
     | m + 1 =>
-        Finset.sum (range (m + 1)) (fun i => d i * IH (m - i) (by omega)) /
+        Finset.sum (range (m + 1))
+            (fun i => d i * IH (m - i) (Nat.lt_succ_of_le (Nat.sub_le m i))) /
           (2 * (m + 1))
 
 @[simp] theorem a_zero : a 0 = 1 := by
@@ -95,12 +96,12 @@ theorem a_pos (n : ℕ) : 0 < a n := by
               ∀ i ∈ range (m + 1), 0 ≤ d i * a (m - i) := by
             intro i hi
             exact mul_nonneg (le_of_lt (d_pos i))
-              (le_of_lt (ih (m - i) (by omega)))
+              (le_of_lt (ih (m - i) (Nat.lt_succ_of_le (Nat.sub_le m i))))
           have hsum :
               0 < Finset.sum (range (m + 1)) (fun i => d i * a (m - i)) := by
             rw [sum_pos_iff_of_nonneg hnonneg]
             refine ⟨0, by simp, ?_⟩
-            simpa using mul_pos (d_pos 0) (ih m (by omega))
+            simpa using mul_pos (d_pos 0) (ih m (Nat.lt_succ_self m))
           have hden : 0 < (2 * (m + 1) : ℚ) := by positivity
           exact div_pos hsum hden
 
