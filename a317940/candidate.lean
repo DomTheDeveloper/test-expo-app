@@ -131,7 +131,7 @@ noncomputable def Dseries : ℚ⟦X⟧ := PowerSeries.mk d
 noncomputable def Qseries : ℚ⟦X⟧ := Aseries * Aseries
 
 theorem Aseries_derivative :
-    d⁄dX ℚ Aseries =
+    PowerSeries.derivative ℚ Aseries =
       (PowerSeries.C (1 / 2 : ℚ) * Dseries) * Aseries := by
   ext n
   rw [PowerSeries.coeff_derivative]
@@ -144,7 +144,7 @@ theorem Aseries_derivative :
   ring
 
 theorem Qseries_derivative :
-    d⁄dX ℚ Qseries = Dseries * Qseries := by
+    PowerSeries.derivative ℚ Qseries = Dseries * Qseries := by
   unfold Qseries
   rw [map_mul, Aseries_derivative, Aseries_derivative]
   ring
