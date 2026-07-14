@@ -25,8 +25,7 @@ theorem ode_unique (F G : PowerSeries ℚ)
   | h n ih =>
       cases n with
       | zero =>
-          change PowerSeries.constantCoeff F = PowerSeries.constantCoeff G
-          exact h0
+          simpa [PowerSeries.coeff_zero_eq_constantCoeff_apply] using h0
       | succ m =>
           have hFc := congrArg (PowerSeries.coeff m) hF
           have hGc := congrArg (PowerSeries.coeff m) hG
