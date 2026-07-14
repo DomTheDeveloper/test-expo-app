@@ -83,7 +83,6 @@ theorem a_succ (m : ℕ) :
         (2 * (m + 1)) := by
   unfold a
   rw [WellFounded.fix_eq]
-  rfl
 
 theorem a_pos (n : ℕ) : 0 < a n := by
   induction n using Nat.strong_induction_on with
