@@ -23,7 +23,7 @@ jobs:
           import json
           from pathlib import Path
           payload = {
-              "formal_statement": Path("a317940/formal_statement.lean").read_text(),
+              "formal_statement": Path("a317940/formal_statement.generated.lean").read_text(),
               "content": Path("a317940/candidate.generated.lean").read_text(),
               "environment": "lean-4.27.0",
               "mathlib_options": False,
@@ -46,12 +46,13 @@ jobs:
           if not r.get("okay", False):
               sys.exit(1)
           PY
-      - name: Upload AXLE response and generated candidate
+      - name: Upload AXLE response and generated sources
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: a317940-axle-response
           path: |
             axle-response.json
+            a317940/formal_statement.generated.lean
             a317940/candidate.generated.lean
           if-no-files-found: warn
