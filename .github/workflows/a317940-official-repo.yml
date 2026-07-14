@@ -83,6 +83,13 @@ jobs:
           lake exe cache unpack || true
           lake exe cache get
 
+      - name: Build upstream import dependency
+        working-directory: formal-conjectures
+        run: |
+          set -o pipefail
+          lake --wfail build FormalConjectures.Util.ProblemImports \
+            2>&1 | tee a317940-import-build.log
+
       - name: Compile exact upstream file
         working-directory: formal-conjectures
         run: |
@@ -119,6 +126,7 @@ jobs:
           path: |
             formal-conjectures/FormalConjectures/OEIS/Auto/317940_cd729cdd.lean
             formal-conjectures/A317940AxiomAudit.lean
+            formal-conjectures/a317940-import-build.log
             formal-conjectures/a317940-upstream-file-build.log
             formal-conjectures/a317940-axiom-audit.log
             formal-conjectures/a317940-full-build.log
