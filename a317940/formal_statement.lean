@@ -25,9 +25,6 @@ noncomputable def A317940_f : ℕ → ℚ :=
         else 0
       (A_n - sum_of_products) / 2
 
-open scoped BigOperators
-open Finset
-
 namespace A317940Verified
 
 def ExactSpec : Prop := ∀ n : ℕ, n > 0 → A317940_f n ≥ 0
@@ -54,14 +51,15 @@ noncomputable def a : ℕ → ℚ :=
     match n with
     | 0 => 1
     | m + 1 =>
-        (∑ i in range (m + 1), d i * IH (m - i) (by omega)) /
+        Finset.sum (range (m + 1)) (fun i => d i * IH (m - i) (by omega)) /
           (2 * (m + 1))
 
 @[simp] theorem a_zero : a 0 = 1 := by sorry
 
 theorem a_succ (m : ℕ) :
     a (m + 1) =
-      (∑ i in range (m + 1), d i * a (m - i)) / (2 * (m + 1)) := by sorry
+      Finset.sum (range (m + 1)) (fun i => d i * a (m - i)) /
+        (2 * (m + 1)) := by sorry
 
 theorem a_pos (n : ℕ) : 0 < a n := by sorry
 
