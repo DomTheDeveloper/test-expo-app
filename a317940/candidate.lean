@@ -126,6 +126,26 @@ theorem b_pos (n : ℕ) : 0 < b n := by
       rw [b_odd]
       positivity
 
+theorem sum_range_even_odd_even (f : ℕ → ℚ) (m : ℕ) :
+    Finset.sum (range (2 * m + 1)) f =
+      Finset.sum (range (m + 1)) (fun r => f (2 * r)) +
+      Finset.sum (range m) (fun r => f (2 * r + 1)) := by
+  induction m with
+  | zero => simp
+  | succ m ih =>
+      simp only [Nat.mul_succ, Finset.sum_range_succ]
+      rw [ih]
+      ring
+
+theorem sum_range_even_odd_odd (f : ℕ → ℚ) (m : ℕ) :
+    Finset.sum (range (2 * m + 2)) f =
+      Finset.sum (range (m + 1)) (fun r => f (2 * r)) +
+      Finset.sum (range (m + 1)) (fun r => f (2 * r + 1)) := by
+  rw [show 2 * m + 2 = (2 * m + 1) + 1 by omega,
+    Finset.sum_range_succ, sum_range_even_odd_even,
+    Finset.sum_range_succ]
+  ring
+
 noncomputable def Aseries : PowerSeries ℚ := PowerSeries.mk a
 noncomputable def Dseries : PowerSeries ℚ := PowerSeries.mk d
 noncomputable def Qseries : PowerSeries ℚ := Aseries * Aseries
