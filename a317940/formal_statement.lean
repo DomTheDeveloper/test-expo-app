@@ -77,9 +77,9 @@ noncomputable def b : ℕ → ℚ :=
 
 theorem b_pos (n : ℕ) : 0 < b n := by sorry
 
-noncomputable def Aseries : ℚ⟦X⟧ := PowerSeries.mk a
-noncomputable def Dseries : ℚ⟦X⟧ := PowerSeries.mk d
-noncomputable def Qseries : ℚ⟦X⟧ := Aseries * Aseries
+noncomputable def Aseries : PowerSeries ℚ := PowerSeries.mk a
+noncomputable def Dseries : PowerSeries ℚ := PowerSeries.mk d
+noncomputable def Qseries : PowerSeries ℚ := Aseries * Aseries
 
 theorem Aseries_derivative :
     PowerSeries.derivative ℚ Aseries =
