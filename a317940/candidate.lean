@@ -67,4 +67,42 @@ theorem d_pos (n : ℕ) : 0 < d n := by
   have hpow : 0 < 1 / (2 : ℚ) ^ (n + 1) := by positivity
   exact lt_of_lt_of_le hpow (d_lower n)
 
+noncomputable def a : ℕ → ℚ :=
+  WellFounded.fix (measure id).wf fun n IH ↦
+    match n with
+    | 0 => 1
+    | m + 1 =>
+        (∑ i in range (m + 1), d i * IH (m - i) (by omega)) /
+          (2 * (m + 1))
+
+@[simp] theorem a_zero : a 0 = 1 := by
+  unfold a
+  rw [WellFounded.fix_eq]
+
+theorem a_succ (m : ℕ) :
+    a (m + 1) =
+      (∑ i in range (m + 1), d i * a (m - i)) / (2 * (m + 1)) := by
+  unfold a
+  rw [WellFounded.fix_eq]
+  rfl
+
+theorem a_pos (n : ℕ) : 0 < a n := by
+  induction n using Nat.strong_induction_on with
+  | h n ih =>
+      cases n with
+      | zero => simp
+      | succ m =>
+          rw [a_succ]
+          have hnonneg :
+              ∀ i ∈ range (m + 1), 0 ≤ d i * a (m - i) := by
+            intro i hi
+            exact mul_nonneg (le_of_lt (d_pos i))
+              (le_of_lt (ih (m - i) (by omega)))
+          have hsum : 0 < ∑ i in range (m + 1), d i * a (m - i) := by
+            rw [sum_pos_iff_of_nonneg hnonneg]
+            refine ⟨0, by simp, ?_⟩
+            simpa using mul_pos (d_pos 0) (ih m (by omega))
+          have hden : 0 < (2 * (m + 1) : ℚ) := by positivity
+          exact div_pos hsum hden
+
 end A317940Verified
