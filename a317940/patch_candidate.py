@@ -73,6 +73,7 @@ candidate_extensions = [
     Path("a317940/ode_extension_candidate.txt").read_text(),
     Path("a317940/a005187_extension_candidate.txt").read_text(),
     Path("a317940/local_bridge_extension_candidate.txt").read_text(),
+    Path("a317940/rescale_extension_candidate.txt").read_text(),
 ]
 text = text.replace(end_marker, "".join(candidate_extensions) + end_marker)
 Path("a317940/candidate.generated.lean").write_text(text)
@@ -84,6 +85,7 @@ statement_extensions = [
     Path("a317940/ode_extension_statement.txt").read_text(),
     Path("a317940/a005187_extension_statement.txt").read_text(),
     Path("a317940/local_bridge_extension_statement.txt").read_text(),
+    Path("a317940/rescale_extension_statement.txt").read_text(),
 ]
 formal = formal.replace(end_marker, "".join(statement_extensions) + end_marker)
 Path("a317940/formal_statement.generated.lean").write_text(formal)
