@@ -81,6 +81,7 @@ candidate_extensions = [
     Path("a317940/final_extension_candidate.txt").read_text(),
 ]
 text = text.replace(end_marker, "".join(candidate_extensions) + end_marker)
+text += Path("a317940/exact_target_postlude_candidate.txt").read_text()
 Path("a317940/candidate.generated.lean").write_text(text)
 
 formal = Path("a317940/formal_statement.lean").read_text()
@@ -98,6 +99,7 @@ statement_extensions = [
     Path("a317940/final_extension_statement.txt").read_text(),
 ]
 formal = formal.replace(end_marker, "".join(statement_extensions) + end_marker)
+formal += Path("a317940/exact_target_postlude_statement.txt").read_text()
 Path("a317940/formal_statement.generated.lean").write_text(formal)
 
 print("Generated candidate:", len(text), "bytes")
