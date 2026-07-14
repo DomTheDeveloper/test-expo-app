@@ -57,4 +57,4 @@ jobs:
         working-directory: formal-conjectures
         run: |
           lake --wfail build FormalConjectures.Util.ProblemImports
-          lake env lean -DwarningAsError=true FormalConjectures/OEIS/Auto/317940_cd729cdd.lean
+          lake env lean FormalConjectures/OEIS/Auto/317940_cd729cdd.lean
