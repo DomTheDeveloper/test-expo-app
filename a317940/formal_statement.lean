@@ -64,7 +64,6 @@ theorem a_succ (m : ℕ) :
 
 theorem a_pos (n : ℕ) : 0 < a n := by sorry
 
-/-- The normalized local coefficients `2^{-s₂(n)}`, defined without digit sums. -/
 noncomputable def b : ℕ → ℚ :=
   Nat.evenOddRec 1
     (fun _ x => x)
@@ -77,5 +76,16 @@ noncomputable def b : ℕ → ℚ :=
 @[simp] theorem b_odd (r : ℕ) : b (2 * r + 1) = b r / 2 := by sorry
 
 theorem b_pos (n : ℕ) : 0 < b n := by sorry
+
+noncomputable def Aseries : ℚ⟦X⟧ := PowerSeries.mk a
+noncomputable def Dseries : ℚ⟦X⟧ := PowerSeries.mk d
+noncomputable def Qseries : ℚ⟦X⟧ := Aseries * Aseries
+
+theorem Aseries_derivative :
+    d⁄dX ℚ Aseries =
+      (PowerSeries.C (1 / 2 : ℚ) * Dseries) * Aseries := by sorry
+
+theorem Qseries_derivative :
+    d⁄dX ℚ Qseries = Dseries * Qseries := by sorry
 
 end A317940Verified
