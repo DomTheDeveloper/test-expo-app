@@ -140,7 +140,6 @@ theorem Aseries_derivative :
   rw [a_succ]
   have hn : (n + 1 : ℚ) ≠ 0 := by positivity
   field_simp
-  ring
 
 theorem Qseries_derivative :
     PowerSeries.derivative ℚ Qseries = Dseries * Qseries := by
@@ -157,7 +156,7 @@ theorem Qseries_derivative :
       (PowerSeries.C (1 / 2 : ℚ) : PowerSeries ℚ) +
         PowerSeries.C (1 / 2 : ℚ) = 1 := by
     ext n
-    cases n <;> simp
+    cases n <;> simp <;> norm_num
   calc
     Aseries * (PowerSeries.C (1 / 2 : ℚ) * (Dseries * Aseries)) +
         Aseries * (PowerSeries.C (1 / 2 : ℚ) * (Dseries * Aseries)) =
