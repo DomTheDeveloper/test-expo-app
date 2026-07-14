@@ -1,0 +1,52 @@
+name: Temporary A317940 AXLE verification
+
+on:
+  push:
+    branches: [a317940-axle-temp]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Submit to AXLE strict verifier
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          payload = {
+              "formal_statement": Path("a317940/formal_statement.lean").read_text(),
+              "content": Path("a317940/candidate.lean").read_text(),
+              "environment": "lean-4.27.0",
+              "mathlib_options": False,
+              "ignore_imports": True,
+              "timeout_seconds": 600,
+          }
+          Path("request.json").write_text(json.dumps(payload))
+          PY
+          curl --fail-with-body --retry 3 --retry-delay 5 \
+            -sS -X POST https://axle.axiommath.ai/api/v1/verify_proof \
+            -H 'Content-Type: application/json' \
+            --data-binary @request.json | tee axle-response.json
+          python3 - <<'PY'
+          import json, sys
+          from pathlib import Path
+          r = json.loads(Path("axle-response.json").read_text())
+          print(json.dumps(r, indent=2))
+          print("AXLE_OKAY=" + str(r.get("okay")))
+          print("FAILED_DECLARATIONS=" + repr(r.get("failed_declarations")))
+          if not r.get("okay", False):
+              sys.exit(1)
+          PY
+      - name: Upload AXLE response
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: a317940-axle-response
+          path: axle-response.json
+          if-no-files-found: warn
