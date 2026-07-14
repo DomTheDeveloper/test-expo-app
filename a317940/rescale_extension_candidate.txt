@@ -20,5 +20,5 @@ theorem c_convolution (n : ℕ) :
   rw [PowerSeries.coeff_mul, Nat.sum_antidiagonal_eq_sum_range_succ_mk,
     PowerSeries.coeff_rescale] at h
   simp only [Cseries, Aseries, Bseries, PowerSeries.coeff_rescale,
-    PowerSeries.coeff_mk, c] at h
+    PowerSeries.coeff_mk] at h
   exact h.trans (four_pow_mul_b n)
