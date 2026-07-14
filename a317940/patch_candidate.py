@@ -65,6 +65,11 @@ replace_exact(
     "          rw [← him]\n          push_cast\n          ring\n",
 )
 
+replace_exact(
+    "    ext n\n    cases n <;> simp <;> norm_num\n",
+    "    ext n\n    cases n with\n    | zero => norm_num\n    | succ n => simp\n",
+)
+
 end_marker = "\nend A317940Verified\n"
 if text.count(end_marker) != 1:
     raise RuntimeError("candidate namespace end marker not unique")
