@@ -49,4 +49,20 @@ theorem d_lower : ∀ n : ℕ, 1 / (2 : ℚ) ^ (n + 1) ≤ d n := by sorry
 
 theorem d_pos (n : ℕ) : 0 < d n := by sorry
 
+noncomputable def a : ℕ → ℚ :=
+  WellFounded.fix (measure id).wf fun n IH ↦
+    match n with
+    | 0 => 1
+    | m + 1 =>
+        (∑ i in range (m + 1), d i * IH (m - i) (by omega)) /
+          (2 * (m + 1))
+
+@[simp] theorem a_zero : a 0 = 1 := by sorry
+
+theorem a_succ (m : ℕ) :
+    a (m + 1) =
+      (∑ i in range (m + 1), d i * a (m - i)) / (2 * (m + 1)) := by sorry
+
+theorem a_pos (n : ℕ) : 0 < a n := by sorry
+
 end A317940Verified
