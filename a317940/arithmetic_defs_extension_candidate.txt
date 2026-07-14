@@ -16,7 +16,9 @@ noncomputable def targetAF : ArithmeticFunction ℚ :=
 
 @[simp] theorem targetAF_prime_pow {p e : ℕ} (hp : p.Prime) :
     targetAF (p ^ e) = (2 : ℚ) ^ (A005187 e) := by
-  simp [targetAF, A046644, hp.ne_zero, hp.factorization_pow]
+  have hzero : (2 : ℚ) ^ (A005187 0) = 1 := by simp [A005187]
+  simp [targetAF, A046644, hp.ne_zero, hp.factorization_pow,
+    Finsupp.prod_single_index, hzero]
 
 theorem rootAF_multiplicative : rootAF.IsMultiplicative := by
   rw [ArithmeticFunction.IsMultiplicative.iff_ne_zero]
