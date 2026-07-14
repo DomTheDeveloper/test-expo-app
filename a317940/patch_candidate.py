@@ -78,6 +78,7 @@ candidate_extensions = [
     Path("a317940/global_square_extension_candidate.txt").read_text(),
     Path("a317940/recurrence_prep_extension_candidate.txt").read_text(),
     Path("a317940/exact_identity_extension_candidate.txt").read_text(),
+    Path("a317940/final_extension_candidate.txt").read_text(),
 ]
 text = text.replace(end_marker, "".join(candidate_extensions) + end_marker)
 Path("a317940/candidate.generated.lean").write_text(text)
@@ -94,6 +95,7 @@ statement_extensions = [
     Path("a317940/global_square_extension_statement.txt").read_text(),
     Path("a317940/recurrence_prep_extension_statement.txt").read_text(),
     Path("a317940/exact_identity_extension_statement.txt").read_text(),
+    Path("a317940/final_extension_statement.txt").read_text(),
 ]
 formal = formal.replace(end_marker, "".join(statement_extensions) + end_marker)
 Path("a317940/formal_statement.generated.lean").write_text(formal)
