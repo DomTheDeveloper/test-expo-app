@@ -104,4 +104,26 @@ theorem a_pos (n : ℕ) : 0 < a n := by
           have hden : 0 < (2 * (m + 1) : ℚ) := by positivity
           exact div_pos hsum hden
 
+noncomputable def b : ℕ → ℚ :=
+  Nat.evenOddRec 1
+    (fun _ x => x)
+    (fun _ x => x / 2)
+
+@[simp] theorem b_zero : b 0 = 1 := by
+  simp [b]
+
+@[simp] theorem b_even (r : ℕ) : b (2 * r) = b r := by
+  simp [b, Nat.evenOddRec_even]
+
+@[simp] theorem b_odd (r : ℕ) : b (2 * r + 1) = b r / 2 := by
+  simp [b, Nat.evenOddRec_odd]
+
+theorem b_pos (n : ℕ) : 0 < b n := by
+  induction n using Nat.evenOddRec with
+  | h0 => norm_num [b]
+  | h_even r ih => simpa using ih
+  | h_odd r ih =>
+      rw [b_odd]
+      positivity
+
 end A317940Verified
