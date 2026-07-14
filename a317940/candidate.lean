@@ -168,6 +168,104 @@ theorem sum_range_even_odd_odd (f : ℕ → ℚ) (m : ℕ) :
           rw [hodd]
           ring
 
+theorem geometric_shift (m : ℕ) :
+    Finset.sum (range (m + 1))
+        (fun r => 1 / (2 : ℚ) ^ (2 * r + 1) * b (m - r)) =
+      b m / 2 +
+        Finset.sum (range m)
+          (fun r => 1 / (2 : ℚ) ^ (2 * r + 3) * b (m - r - 1)) := by
+  rw [Finset.sum_range_succ']
+  congr 1
+  · norm_num
+  · apply Finset.sum_congr rfl
+    intro r hr
+    rw [show 2 * (r + 1) + 1 = 2 * r + 3 by omega,
+      show m - (r + 1) = m - r - 1 by omega]
+
+theorem b_derivative_coeff (n : ℕ) :
+    (n + 1 : ℚ) * b (n + 1) =
+      Finset.sum (range (n + 1)) (fun i => d i * b (n - i)) := by
+  induction n using Nat.evenOddStrongRec with
+  | h_odd m ih =>
+      rw [show 2 * m + 1 + 1 = 2 * (m + 1) by omega, b_even]
+      rw [sum_range_even_odd_odd]
+      have heven :
+          Finset.sum (range (m + 1))
+              (fun r => d (2 * r) * b ((2 * m + 1) - 2 * r)) =
+            Finset.sum (range (m + 1))
+              (fun r => 1 / (2 : ℚ) ^ (2 * r + 2) * b (m - r)) := by
+        apply Finset.sum_congr rfl
+        intro r hr
+        have hrle : r ≤ m := by
+          have := Finset.mem_range.mp hr
+          omega
+        rw [d_even, show 2 * m + 1 - 2 * r = 2 * (m - r) + 1 by omega,
+          b_odd, show 2 * r + 2 = (2 * r + 1) + 1 by omega, pow_succ]
+        ring
+      have hodd :
+          Finset.sum (range (m + 1))
+              (fun r => d (2 * r + 1) * b ((2 * m + 1) - (2 * r + 1))) =
+            Finset.sum (range (m + 1))
+              (fun r => (2 * d r - 1 / (2 : ℚ) ^ (2 * r + 2)) * b (m - r)) := by
+        apply Finset.sum_congr rfl
+        intro r hr
+        have hrle : r ≤ m := by
+          have := Finset.mem_range.mp hr
+          omega
+        rw [d_odd, show 2 * m + 1 - (2 * r + 1) = 2 * (m - r) by omega,
+          b_even]
+      rw [heven, hodd]
+      have hcancel :
+          Finset.sum (range (m + 1))
+              (fun r => 1 / (2 : ℚ) ^ (2 * r + 2) * b (m - r)) +
+            Finset.sum (range (m + 1))
+              (fun r => (2 * d r - 1 / (2 : ℚ) ^ (2 * r + 2)) * b (m - r)) =
+            2 * Finset.sum (range (m + 1)) (fun r => d r * b (m - r)) := by
+        rw [← Finset.sum_add_distrib, Finset.mul_sum]
+        apply Finset.sum_congr rfl
+        intro r hr
+        ring
+      rw [hcancel]
+      have him := ih m (by omega)
+      rw [← him]
+      ring
+  | h_even M ih =>
+      cases M with
+      | zero => norm_num [b, d]
+      | succ m =>
+          rw [b_odd]
+          rw [sum_range_even_odd_even]
+          have heven :
+              Finset.sum (range (m + 2))
+                  (fun r => d (2 * r) * b (2 * (m + 1) - 2 * r)) =
+                Finset.sum (range (m + 2))
+                  (fun r => 1 / (2 : ℚ) ^ (2 * r + 1) * b (m + 1 - r)) := by
+            apply Finset.sum_congr rfl
+            intro r hr
+            have hrle : r ≤ m + 1 := by
+              have := Finset.mem_range.mp hr
+              omega
+            rw [d_even, show 2 * (m + 1) - 2 * r = 2 * (m + 1 - r) by omega,
+              b_even]
+          have hodd :
+              Finset.sum (range (m + 1))
+                  (fun r => d (2 * r + 1) * b (2 * (m + 1) - (2 * r + 1))) =
+                Finset.sum (range (m + 1))
+                  (fun r => d r * b (m - r) -
+                    1 / (2 : ℚ) ^ (2 * r + 3) * b (m - r)) := by
+            apply Finset.sum_congr rfl
+            intro r hr
+            have hrle : r ≤ m := by
+              have := Finset.mem_range.mp hr
+              omega
+            rw [d_odd, show 2 * (m + 1) - (2 * r + 1) = 2 * (m - r) + 1 by omega,
+              b_odd, show 2 * r + 3 = (2 * r + 2) + 1 by omega, pow_succ]
+            ring
+          rw [heven, hodd, geometric_shift, Finset.sum_sub_distrib]
+          have him := ih m (by omega)
+          rw [← him]
+          ring
+
 noncomputable def Aseries : PowerSeries ℚ := PowerSeries.mk a
 noncomputable def Dseries : PowerSeries ℚ := PowerSeries.mk d
 noncomputable def Qseries : PowerSeries ℚ := Aseries * Aseries
