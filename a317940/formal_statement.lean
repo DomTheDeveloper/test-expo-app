@@ -87,6 +87,13 @@ theorem sum_range_even_odd_odd (f : ℕ → ℚ) (m : ℕ) :
       Finset.sum (range (m + 1)) (fun r => f (2 * r)) +
       Finset.sum (range (m + 1)) (fun r => f (2 * r + 1)) := by sorry
 
+theorem geometric_shift (m : ℕ) :
+    Finset.sum (range (m + 1))
+        (fun r => 1 / (2 : ℚ) ^ (2 * r + 1) * b (m - r)) =
+      b m / 2 +
+        Finset.sum (range m)
+          (fun r => 1 / (2 : ℚ) ^ (2 * r + 3) * b (m - r - 1)) := by sorry
+
 theorem b_derivative_coeff (n : ℕ) :
     (n + 1 : ℚ) * b (n + 1) =
       Finset.sum (range (n + 1)) (fun i => d i * b (n - i)) := by sorry
