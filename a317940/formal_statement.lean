@@ -83,7 +83,7 @@ noncomputable def Qseries : PowerSeries ℚ := Aseries * Aseries
 
 theorem Aseries_derivative :
     PowerSeries.derivative ℚ Aseries =
-      (PowerSeries.C (1 / 2 : ℚ) * Dseries) * Aseries := by sorry
+      PowerSeries.C (1 / 2 : ℚ) * (Dseries * Aseries) := by sorry
 
 theorem Qseries_derivative :
     PowerSeries.derivative ℚ Qseries = Dseries * Qseries := by sorry
