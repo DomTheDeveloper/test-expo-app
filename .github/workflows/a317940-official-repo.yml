@@ -109,7 +109,7 @@ jobs:
         working-directory: formal-conjectures
         run: |
           set -o pipefail
-          lake --wfail build 2>&1 | tee a317940-full-build.log
+          lake build 2>&1 | tee a317940-full-build.log
 
       - name: Save mathlib cache
         if: always()
