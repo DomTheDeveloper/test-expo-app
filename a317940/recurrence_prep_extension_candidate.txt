@@ -20,11 +20,11 @@ theorem square_decomp (f : ArithmeticFunction ℚ)
       have hdle : d ≤ n := Nat.divisor_le hd
       by_cases h1 : d = 1
       · subst d
-        have hne : (1 : ℕ) ≠ n := ne_of_lt hn
+        have hne : (1 : ℕ) ≠ n := _root_.ne_of_lt hn
         simp [hf1, hne]
       by_cases hdn : d = n
       · subst d
-        rw [Nat.div_self hn0, hf1]
+        rw [Nat.div_self (by omega), hf1]
         simp [h1]
       have hgt : 1 < d := by omega
       have hlt : d < n := lt_of_le_of_ne hdle hdn
