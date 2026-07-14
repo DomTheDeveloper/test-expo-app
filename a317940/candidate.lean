@@ -151,6 +151,10 @@ theorem sum_range_even_odd_odd (f : ℕ → ℚ) (m : ℕ) :
     Finset.sum (range (2 * m + 2)) f =
       Finset.sum (range (m + 1)) (fun r => f (2 * r)) +
       Finset.sum (range (m + 1)) (fun r => f (2 * r + 1)) := by
+  have hodd :
+      Finset.sum (range (m + 1)) (fun r => f (2 * r + 1)) =
+        Finset.sum (range m) (fun r => f (2 * r + 1)) + f (2 * m + 1) := by
+    simpa using Finset.sum_range_succ (fun r => f (2 * r + 1)) m
   calc
     Finset.sum (range (2 * m + 2)) f =
         Finset.sum (range (2 * m + 1)) f + f (2 * m + 1) := by
@@ -161,7 +165,7 @@ theorem sum_range_even_odd_odd (f : ℕ → ℚ) (m : ℕ) :
           rw [sum_range_even_odd_even]
     _ = Finset.sum (range (m + 1)) (fun r => f (2 * r)) +
           Finset.sum (range (m + 1)) (fun r => f (2 * r + 1)) := by
-          rw [Finset.sum_range_succ]
+          rw [hodd]
           ring
 
 noncomputable def Aseries : PowerSeries ℚ := PowerSeries.mk a
