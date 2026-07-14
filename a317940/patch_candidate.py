@@ -68,15 +68,22 @@ replace_exact(
 end_marker = "\nend A317940Verified\n"
 if text.count(end_marker) != 1:
     raise RuntimeError("candidate namespace end marker not unique")
-candidate_extension = Path("a317940/ode_extension_candidate.txt").read_text()
-text = text.replace(end_marker, candidate_extension + end_marker)
+
+candidate_extensions = [
+    Path("a317940/ode_extension_candidate.txt").read_text(),
+    Path("a317940/a005187_extension_candidate.txt").read_text(),
+]
+text = text.replace(end_marker, "".join(candidate_extensions) + end_marker)
 Path("a317940/candidate.generated.lean").write_text(text)
 
 formal = Path("a317940/formal_statement.lean").read_text()
 if formal.count(end_marker) != 1:
     raise RuntimeError("formal namespace end marker not unique")
-statement_extension = Path("a317940/ode_extension_statement.txt").read_text()
-formal = formal.replace(end_marker, statement_extension + end_marker)
+statement_extensions = [
+    Path("a317940/ode_extension_statement.txt").read_text(),
+    Path("a317940/a005187_extension_statement.txt").read_text(),
+]
+formal = formal.replace(end_marker, "".join(statement_extensions) + end_marker)
 Path("a317940/formal_statement.generated.lean").write_text(formal)
 
 print("Generated candidate:", len(text), "bytes")
