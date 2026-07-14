@@ -87,6 +87,10 @@ theorem sum_range_even_odd_odd (f : ℕ → ℚ) (m : ℕ) :
       Finset.sum (range (m + 1)) (fun r => f (2 * r)) +
       Finset.sum (range (m + 1)) (fun r => f (2 * r + 1)) := by sorry
 
+theorem b_derivative_coeff (n : ℕ) :
+    (n + 1 : ℚ) * b (n + 1) =
+      Finset.sum (range (n + 1)) (fun i => d i * b (n - i)) := by sorry
+
 noncomputable def Aseries : PowerSeries ℚ := PowerSeries.mk a
 noncomputable def Dseries : PowerSeries ℚ := PowerSeries.mk d
 noncomputable def Qseries : PowerSeries ℚ := Aseries * Aseries
