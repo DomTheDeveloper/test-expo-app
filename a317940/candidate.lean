@@ -133,18 +133,36 @@ theorem sum_range_even_odd_even (f : ℕ → ℚ) (m : ℕ) :
   induction m with
   | zero => simp
   | succ m ih =>
-      simp only [Nat.mul_succ, Finset.sum_range_succ]
-      rw [ih]
-      ring
+      calc
+        Finset.sum (range (2 * (m + 1) + 1)) f =
+            Finset.sum (range (2 * m + 1)) f + f (2 * m + 1) + f (2 * m + 2) := by
+              rw [show 2 * (m + 1) + 1 = ((2 * m + 1) + 1) + 1 by omega,
+                Finset.sum_range_succ, Finset.sum_range_succ]
+        _ = (Finset.sum (range (m + 1)) (fun r => f (2 * r)) +
+              Finset.sum (range m) (fun r => f (2 * r + 1))) +
+              f (2 * m + 1) + f (2 * m + 2) := by rw [ih]
+        _ = Finset.sum (range (m + 2)) (fun r => f (2 * r)) +
+              Finset.sum (range (m + 1)) (fun r => f (2 * r + 1)) := by
+              simp only [Finset.sum_range_succ]
+              rw [show 2 * (m + 1) = 2 * m + 2 by omega]
+              ring
 
 theorem sum_range_even_odd_odd (f : ℕ → ℚ) (m : ℕ) :
     Finset.sum (range (2 * m + 2)) f =
       Finset.sum (range (m + 1)) (fun r => f (2 * r)) +
       Finset.sum (range (m + 1)) (fun r => f (2 * r + 1)) := by
-  rw [show 2 * m + 2 = (2 * m + 1) + 1 by omega,
-    Finset.sum_range_succ, sum_range_even_odd_even,
-    Finset.sum_range_succ]
-  ring
+  calc
+    Finset.sum (range (2 * m + 2)) f =
+        Finset.sum (range (2 * m + 1)) f + f (2 * m + 1) := by
+          rw [show 2 * m + 2 = (2 * m + 1) + 1 by omega,
+            Finset.sum_range_succ]
+    _ = (Finset.sum (range (m + 1)) (fun r => f (2 * r)) +
+          Finset.sum (range m) (fun r => f (2 * r + 1))) + f (2 * m + 1) := by
+          rw [sum_range_even_odd_even]
+    _ = Finset.sum (range (m + 1)) (fun r => f (2 * r)) +
+          Finset.sum (range (m + 1)) (fun r => f (2 * r + 1)) := by
+          rw [Finset.sum_range_succ]
+          ring
 
 noncomputable def Aseries : PowerSeries ℚ := PowerSeries.mk a
 noncomputable def Dseries : PowerSeries ℚ := PowerSeries.mk d
