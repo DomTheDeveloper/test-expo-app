@@ -64,4 +64,18 @@ theorem a_succ (m : ℕ) :
 
 theorem a_pos (n : ℕ) : 0 < a n := by sorry
 
+/-- The normalized local coefficients `2^{-s₂(n)}`, defined without digit sums. -/
+noncomputable def b : ℕ → ℚ :=
+  Nat.evenOddRec 1
+    (fun _ x => x)
+    (fun _ x => x / 2)
+
+@[simp] theorem b_zero : b 0 = 1 := by sorry
+
+@[simp] theorem b_even (r : ℕ) : b (2 * r) = b r := by sorry
+
+@[simp] theorem b_odd (r : ℕ) : b (2 * r + 1) = b r / 2 := by sorry
+
+theorem b_pos (n : ℕ) : 0 < b n := by sorry
+
 end A317940Verified
