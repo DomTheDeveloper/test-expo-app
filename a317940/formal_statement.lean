@@ -51,7 +51,8 @@ noncomputable def a : ℕ → ℚ :=
     match n with
     | 0 => 1
     | m + 1 =>
-        Finset.sum (range (m + 1)) (fun i => d i * IH (m - i) (by omega)) /
+        Finset.sum (range (m + 1))
+            (fun i => d i * IH (m - i) (Nat.lt_succ_of_le (Nat.sub_le m i))) /
           (2 * (m + 1))
 
 @[simp] theorem a_zero : a 0 = 1 := by sorry
