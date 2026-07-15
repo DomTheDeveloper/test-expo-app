@@ -29,7 +29,7 @@ theorem conjecture314_proved [Nontrivial α]
         G hG hTriFree hNoP5 hC
     · exact hasWOWII314StructuralClassification_of_bipartite_side
         G hG side hpart hNoP5
-  exact conjecture314_of_structural_classification G hG hPath hclass
+  exact conjecture314_of_structural_classification G hG hTriFree hPath hclass
 
 #print axioms WrittenOnTheWallII.GraphConjecture314.conjecture314_proved
 
