@@ -5,7 +5,7 @@ import WOWII.GraphConjecture143Boundary
 import WOWII.GraphConjecture143CycleAttach
 
 /-!
-A complete modular proof of WOWII Graph Conjecture 143.
+A complete modular, sorry-free proof of WOWII Graph Conjecture 143.
 -/
 
 namespace WrittenOnTheWallII.GraphConjecture143
