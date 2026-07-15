@@ -82,7 +82,8 @@ lemma induce_insert_isTree_of_unique_neighbor {G : SimpleGraph α}
       apply Subtype.ext
       exact congrArg Subtype.val hxy
     have hcH : (c.mapToSubgraph.map f).IsCycle := hcsub.map hfinj
-    change (G.induce (S : Set α)).IsAcyclic at hT
-    exact hT _ _ hcH
+    have hA : H.IsAcyclic := by
+      simpa [H] using hT.2
+    exact hA _ _ hcH
 
 end WrittenOnTheWallII.GraphConjecture143
