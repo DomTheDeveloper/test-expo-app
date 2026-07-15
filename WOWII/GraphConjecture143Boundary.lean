@@ -146,7 +146,7 @@ lemma exists_external_vertex_with_two_tree_neighbors
       exact ⟨b, hbS, hba, hzb⟩
     have hTins := induce_insert_isTree_boundary haS haz.symm huniq hT
     have hle := hmax (insert z S) (by simp [hxS]) (by simp [hyS]) hTins
-    rw [Finset.card_insert_of_not_mem hzS] at hle
+    rw [Finset.card_insert_of_notMem hzS] at hle
     omega
   obtain ⟨b, hbS, hba, hzb⟩ := htwo
   exact ⟨z, hzS, a, haS, b, hbS, hba.symm, haz.symm, hzb⟩
