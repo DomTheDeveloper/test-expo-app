@@ -29,6 +29,16 @@ jobs:
         working-directory: formal-conjectures
         run: lake exe cache get
 
+      - name: Build target modules
+        working-directory: formal-conjectures
+        run: |
+          lake build \
+            FormalConjectures.WrittenOnTheWallII.GraphConjecture160 \
+            FormalConjectures.WrittenOnTheWallII.GraphConjecture65 \
+            FormalConjectures.WrittenOnTheWallII.GraphConjecture143 \
+            FormalConjectures.WrittenOnTheWallII.GraphConjecture314 \
+            FormalConjectures.WrittenOnTheWallII.GraphConjecture133
+
       - name: Compile campaign files
         id: compile
         working-directory: formal-conjectures
