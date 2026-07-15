@@ -55,18 +55,20 @@ lemma path_toSubgraph_spanningCoe_isAcyclic {G : SimpleGraph α} {u v : α}
 lemma path_toSubgraph_isTree {G : SimpleGraph α} {u v : α} {p : G.Walk u v}
     (hp : p.IsPath) : p.toSubgraph.coe.IsTree := by
   refine ⟨p.toSubgraph_connected.coe, ?_⟩
-  let f : p.toSubgraph.coe ↪g p.toSubgraph.spanningCoe where
+  let f : p.toSubgraph.coe →g p.toSubgraph.spanningCoe where
     toFun := Subtype.val
-    inj' := Subtype.val_injective
-    map_rel_iff' := Iff.rfl
-  exact IsAcyclic.embedding f (path_toSubgraph_spanningCoe_isAcyclic hp)
+    map_rel' := fun _ _ h => h
+  exact IsAcyclic.comap f Subtype.val_injective
+    (path_toSubgraph_spanningCoe_isAcyclic hp)
 
 lemma edge_getVert_succ_mem_edges {G : SimpleGraph α} {u v : α} (p : G.Walk u v)
     {i : ℕ} (hi : i < p.length) : s(p.getVert i, p.getVert (i + 1)) ∈ p.edges := by
-  have hd : p.darts[i] ∈ p.darts := List.getElem_mem _
-  have hm : (p.darts[i]).edge ∈ p.edges := by
-    exact List.mem_map_of_mem _ hd
-  rw [p.darts_getElem_eq_getVert i (by simpa [p.length_darts] using hi)] at hm
+  have hi' : i < p.darts.length := by simpa [p.length_darts] using hi
+  have hd : p.darts[i]'hi' ∈ p.darts := List.getElem_mem _
+  have hm : (p.darts[i]'hi').edge ∈ p.edges := by
+    change (p.darts[i]'hi').edge ∈ p.darts.map Dart.edge
+    exact List.mem_map.mpr ⟨_, hd, rfl⟩
+  rw [p.darts_getElem_eq_getVert i hi'] at hm
   exact hm
 
 lemma geodesic_adj_mem_edges {G : SimpleGraph α} {u v : α} {p : G.Walk u v}
@@ -86,8 +88,9 @@ lemma geodesic_adj_mem_edges {G : SimpleGraph α} {u v : α} {p : G.Walk u v}
     have hqsub : q.IsSubwalk p :=
       (Walk.isSubwalk_take (p.drop a) (b - a)).trans (Walk.isSubwalk_drop p a)
     have hseg := length_eq_dist_of_subwalk hgeo hqsub
+    have hmin : b - a ≤ p.length - a := by omega
     have hseg' : b - a = G.dist (p.getVert a) (p.getVert b) := by
-      simpa [q, Nat.min_eq_left (by omega), Nat.add_sub_of_le hab.le] using hseg
+      simpa [q, Nat.min_eq_left hmin, Nat.add_sub_of_le hab.le] using hseg
     have hdiff : b - a = 1 := by
       rw [dist_eq_one_iff_adj.mpr habadj] at hseg'
       exact hseg'
@@ -101,8 +104,8 @@ lemma geodesic_adj_mem_edges {G : SimpleGraph α} {u v : α} {p : G.Walk u v}
 
 lemma geodesic_support_induces_tree {G : SimpleGraph α} {u v : α} {p : G.Walk u v}
     (hgeo : p.length = G.dist u v) :
-    (G.induce (p.support : Set α)).IsTree := by
-  have heq : G.induce (p.support : Set α) = p.toSubgraph.coe := by
+    (G.induce {x : α | x ∈ p.support}).IsTree := by
+  have heq : G.induce {x : α | x ∈ p.support} = p.toSubgraph.coe := by
     ext x y
     constructor
     · intro hxy
