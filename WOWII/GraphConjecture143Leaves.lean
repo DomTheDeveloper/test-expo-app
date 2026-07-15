@@ -21,6 +21,9 @@ lemma exists_two_degree_one_of_secondSmallestDegree_eq_one [Nontrivial α]
     (hσ : secondSmallestDegree G = 1) :
     ∃ x y : α, x ≠ y ∧ G.degree x = 1 ∧ G.degree y = 1 := by
   let ds := degreeSequence G
+  let D : Multiset ℕ := Finset.univ.val.map (fun v => G.degree v)
+  have hcoe : (↑ds : Multiset ℕ) = D := by
+    simp [ds, D, degreeSequence]
   have hlen : ds.length = Fintype.card α := by
     simp [ds, degreeSequence]
   have hcard : 2 ≤ Fintype.card α := by
@@ -39,11 +42,9 @@ lemma exists_two_degree_one_of_secondSmallestDegree_eq_one [Nontrivial α]
     simpa [i0, i1] using h
   have hget0pos : 0 < ds[0] := by
     have hm : ds[0] ∈ ds := List.getElem_mem (by omega)
-    have hmSort : ds[0] ∈
-        (Finset.univ.val.map (fun v => G.degree v)).sort (· ≤ ·) := by
-      simpa [ds, degreeSequence] using hm
-    have hm' : ds[0] ∈ Finset.univ.val.map (fun v => G.degree v) :=
-      Multiset.mem_sort.mp hmSort
+    have hm' : ds[0] ∈ D := by
+      rw [← hcoe]
+      simpa using hm
     obtain ⟨v, -, hv⟩ := Multiset.mem_map.mp hm'
     rw [← hv]
     exact degree_pos_of_connected hG v
@@ -60,9 +61,6 @@ lemma exists_two_degree_one_of_secondSmallestDegree_eq_one [Nontrivial α]
             subst d0
             subst d1
             simp
-  let D : Multiset ℕ := Finset.univ.val.map (fun v => G.degree v)
-  have hcoe : (↑ds : Multiset ℕ) = D := by
-    simp [ds, D, degreeSequence]
   have hcount_orig : 2 ≤ D.count 1 := by
     rw [← hcoe]
     simpa using hcount_ds
