@@ -1,9 +1,7 @@
 name: WOWII Frontier Lean Check
 
 on:
-  push:
-    branches:
-      - formal-conjectures-wowii-clean
+  pull_request:
     paths:
       - '.github/workflows/wowii-frontier-check.yml'
   workflow_dispatch:
