@@ -19,7 +19,12 @@ lemma fin5_common_neighbor_of_not_adj :
   decide
 
 /-- Finite index certificate for the induced-`P₅` created by a missing edge
-between two consecutive bags. -/
+between two consecutive bags.
+
+For `j = i + 1`, one may take `a = i - 1`, `b = i + 1`, and
+`d = i + 2`.  Notice that `b = j`; distinctness of the actual vertices
+`c b` and `y` follows from the assumed missing edge `¬G.Adj x y`, not from a
+false index inequality. -/
 lemma fin5_missing_blowup_edge_pattern :
     ∀ i j : Fin 5, (cycleGraph 5).Adj i j →
       ∃ a b d : Fin 5,
@@ -33,7 +38,7 @@ lemma fin5_missing_blowup_edge_pattern :
         ¬(cycleGraph 5).Adj i d ∧
         ¬(cycleGraph 5).Adj j b ∧
         a ≠ b ∧ a ≠ d ∧ b ≠ d ∧
-        i ≠ d ∧ j ≠ a ∧ j ≠ b := by
+        i ≠ d ∧ j ≠ a := by
   decide
 
 /-- An indexed induced five-cycle forces the complete `C₅`-blow-up
@@ -75,7 +80,7 @@ lemma hasWOWII314StructuralClassification_of_inducedC5Embedding
       by_contra hnxy
       obtain ⟨a, b, d, hia, hib, hbd, hjd,
         hnab, hnad, hnja, hnid, hnjb,
-        hab, had, hbdne, hid, hja, hjb⟩ :=
+        hab, had, hbdne, hid, hja⟩ :=
         fin5_missing_blowup_edge_pattern (bag x) (bag y) hij
       have hax : G.Adj (c a) x := ((hbagSpec x a).mpr hia).symm
       have hxb : G.Adj x (c b) := (hbagSpec x b).mpr hib
@@ -110,7 +115,7 @@ lemma hasWOWII314StructuralClassification_of_inducedC5Embedding
       have hcb_y : c b ≠ y := by
         intro h
         subst y
-        exact hjb (hcycleBag b)
+        exact hnxy hxb
       apply hNoP5 (c a) x (c b) (c d) y
       unfold FormsInducedP5
       exact ⟨hax.ne, hca_cb, hca_cd, hca_y,
