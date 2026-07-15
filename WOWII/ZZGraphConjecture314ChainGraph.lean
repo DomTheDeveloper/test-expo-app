@@ -61,9 +61,9 @@ lemma isWellTotallyDominated_of_connected_chain_graph
       (∀ x : α, G.Adj b x → G.Adj a x)) :
     IsWellTotallyDominated G := by
   have hNoP5 := no_FormsInducedP5_of_bipartite_nested_neighborhoods G side hpart hNested
-  have hcommon : ∀ (s : Bool) (a₁ a₂ : α), side a₁ = s → side a₂ = s → a₁ ≠ a₂ →
+  have hcommon (s : Bool) (a₁ a₂ : α)
+      (ha₁ : side a₁ = s) (ha₂ : side a₂ = s) (_ha₁₂ : a₁ ≠ a₂) :
       ∃ c : α, side c ≠ s ∧ G.Adj c a₁ ∧ G.Adj c a₂ := by
-    intro s a₁ a₂ ha₁ ha₂ _ha₁₂
     rcases hNested a₁ a₂ (ha₁.trans ha₂.symm) with h12 | h21
     · obtain ⟨c, ha₁c⟩ := exists_neighbor_of_connected G hG a₁
       have ha₂c : G.Adj a₂ c := h12 c ha₁c
