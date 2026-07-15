@@ -30,9 +30,25 @@ jobs:
         run: lake exe cache get
 
       - name: Compile campaign files
+        id: compile
         working-directory: formal-conjectures
+        shell: bash
         run: |
+          set +e
+          status=0
+          : > ../lean-output.log
           for f in ../WOWII/*.lean; do
-            echo "=== Checking $f ==="
-            lake env lean "$f"
+            echo "=== Checking $f ===" | tee -a ../lean-output.log
+            lake env lean "$f" >> ../lean-output.log 2>&1
+            code=$?
+            if [ "$code" -ne 0 ]; then status=$code; fi
           done
+          cat ../lean-output.log
+          exit "$status"
+
+      - name: Upload Lean output
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lean-output
+          path: lean-output.log
