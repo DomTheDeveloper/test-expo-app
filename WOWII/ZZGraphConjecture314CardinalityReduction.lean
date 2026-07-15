@@ -104,7 +104,7 @@ theorem isWellTotallyDominated_of_minimalTDS_card_le_three
     [Nonempty α]
     (G : SimpleGraph α) [DecidableRel G.Adj]
     (hTriFree : ∀ a b c : α, G.Adj a b → G.Adj b c → G.Adj c a → False)
-    (hNoP5 : ∀ x0 x1 x2 x3 x4 : α, ¬FormsInducedP5 G x0 x1 x2 x3 x3 → False)
+    (hNoP5 : ∀ x0 x1 x2 x3 x4 : α, ¬FormsInducedP5 G x0 x1 x2 x3 x4)
     (hUpper : ∀ S : Finset α, IsMinimalTotalDominatingSet G S → S.card ≤ 3) :
     IsWellTotallyDominated G := by
   by_cases hTwo : ∃ S : Finset α, IsMinimalTotalDominatingSet G S ∧ S.card = 2
