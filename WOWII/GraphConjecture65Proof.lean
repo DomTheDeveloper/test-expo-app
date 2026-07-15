@@ -80,6 +80,10 @@ lemma two_le_largestInducedForestSize (G : SimpleGraph α) [DecidableRel G.Adj]
       exact s.card_le_univ⟩
   · refine ⟨{u, w}, ?_, by simp [huw.ne]⟩
     change (((⊤ : G.Subgraph).induce (↑({u, w} : Finset α) : Set α)).coe).IsAcyclic
+    have hset : (↑({u, w} : Finset α) : Set α) = ({u, w} : Set α) := by
+      ext x
+      simp
+    rw [hset]
     rw [← Subgraph.subgraphOfAdj_eq_induce huw]
     exact (IsTree.coe_subgraphOfAdj huw).IsAcyclic
 
