@@ -5,12 +5,6 @@ on:
     paths:
       - 'WOWII/**'
       - '.github/workflows/wowii-all-check.yml'
-  push:
-    branches:
-      - formal-conjectures-wowii-143
-    paths:
-      - 'WOWII/**'
-      - '.github/workflows/wowii-all-check.yml'
   workflow_dispatch:
 
 jobs:
@@ -18,8 +12,15 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 120
     steps:
-      - name: Checkout proof campaign
+      - name: Checkout CI branch
         uses: actions/checkout@v4
+
+      - name: Checkout exact WOWII proof commit
+        uses: actions/checkout@v4
+        with:
+          repository: DomTheDeveloper/test-expo-app
+          ref: bd1bde5c383eb060c0191587542041cb73831396
+          path: campaign-source
 
       - name: Checkout pinned Formal Conjectures
         uses: actions/checkout@v4
@@ -51,7 +52,7 @@ jobs:
       - name: Prepare campaign tree
         run: |
           rm -rf formal-conjectures/WOWII
-          cp -R WOWII formal-conjectures/WOWII
+          cp -R campaign-source/WOWII formal-conjectures/WOWII
 
       - name: Compile every campaign module in dependency order
         working-directory: formal-conjectures
@@ -97,7 +98,7 @@ jobs:
 
           exit "$status"
 
-      - name: Reject hidden sorry dependencies in completed core results
+      - name: Reject hidden sorry dependencies
         if: always()
         working-directory: formal-conjectures
         shell: bash
