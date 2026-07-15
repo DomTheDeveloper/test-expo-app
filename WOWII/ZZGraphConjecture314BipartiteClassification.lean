@@ -30,8 +30,7 @@ lemma exists_common_neighbor_of_bipartite_noP5
   obtain ⟨p, hp, hgeo⟩ := hG.exists_path_of_dist a b
   have hzero : G.dist a b ≠ 0 := by
     intro h
-    have : a = b := by simpa using h
-    exact hab this
+    exact hab ((hG.dist_eq_zero_iff).mp h)
   have hone : G.dist a b ≠ 1 := by
     intro h
     have hadj : G.Adj a b := dist_eq_one_iff_adj.mp h
@@ -63,8 +62,7 @@ lemma exists_common_neighbor_of_bipartite_noP5
     have h' := p.adj_getVert_succ (i := 1) (by omega)
     have hend : p.getVert 2 = b := by simpa [hlen] using p.getVert_length
     simpa [c, hend] using h'
-  refine ⟨c, ?_, hac.symm, hcb⟩
-  exact hpart a c hac
+  refine ⟨c, (hpart a c hac).symm, hac.symm, hcb⟩
 
 /-- Connected bipartite induced-`P₅`-free graphs are chain graphs: the open
 neighborhoods of vertices on either fixed side are linearly ordered by
@@ -94,25 +92,21 @@ lemma nested_neighborhoods_of_bipartite_noP5
     exists_common_neighbor_of_bipartite_noP5 G hG side hpart hNoP5 hsame hab
   have hxside_ne : side x ≠ side a := hpart a x hax
   have hyside_ne : side y ≠ side b := hpart b y hby
-  have hcside_ne : side c ≠ side a := by
-    simpa using hcside
   have hxcy : side x = side c ∧ side c = side y := by
     constructor
-    · exact bool_eq_of_ne_same_bip hxside_ne hcside_ne
+    · exact bool_eq_of_ne_same_bip hxside_ne hcside
     · have hy_ne_a : side y ≠ side a := by simpa [hsame] using hyside_ne
-      exact bool_eq_of_ne_same_bip hcside_ne hy_ne_a
+      exact bool_eq_of_ne_same_bip hcside hy_ne_a
   have hn_xc : ¬G.Adj x c := fun h => hpart x c h hxcy.1
   have hn_xy : ¬G.Adj x y := fun h => hpart x y h (hxcy.1.trans hxcy.2)
   have hn_cy : ¬G.Adj c y := fun h => hpart c y h hxcy.2
   have hn_ab : ¬G.Adj a b := fun h => hpart a b h hsame
   have hxa : G.Adj x a := hax.symm
-  have hbc : G.Adj b c := hcb.symm
-  have hyb : G.Adj y b := hby.symm
   have hx_ne_a : x ≠ a := hxa.ne
   have hx_ne_c : x ≠ c := by
     intro h
     subst c
-    exact hnxb hcb
+    exact hnxb hcb.symm
   have hx_ne_b : x ≠ b := by
     intro h
     subst x
@@ -120,13 +114,13 @@ lemma nested_neighborhoods_of_bipartite_noP5
   have hx_ne_y : x ≠ y := by
     intro h
     subst y
-    exact hnxb hby.symm
+    exact hnxb hby
   have ha_ne_c : a ≠ c := hca.ne.symm
   have ha_ne_b : a ≠ b := hab
   have ha_ne_y : a ≠ y := by
     intro h
     subst y
-    exact hn_ab hby
+    exact hn_ab hby.symm
   have hc_ne_b : c ≠ b := hcb.ne
   have hc_ne_y : c ≠ y := by
     intro h
@@ -139,7 +133,7 @@ lemma nested_neighborhoods_of_bipartite_noP5
     ha_ne_c, ha_ne_b, ha_ne_y,
     hc_ne_b, hc_ne_y, hb_ne_y,
     hxa, hca.symm, hcb, hby,
-    hn_xc, hnxb, hn_xy,
+    hn_xc, (fun h => hnxb h.symm), hn_xy,
     hn_ab, hnay, hn_cy⟩
 
 /-- The exact structural-classification branch in the bipartite case. -/
