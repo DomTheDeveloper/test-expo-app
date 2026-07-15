@@ -102,20 +102,21 @@ lemma hasWOWII314StructuralClassification_of_inducedC5Embedding
       have hcb_cd : c b ≠ c d := fun h => hbdne (hc.1 h)
       have hca_y : c a ≠ y := by
         intro h
-        subst y
-        exact hja (hcycleBag a)
+        have hbagEq : bag y = a := by simpa [← h] using hcycleBag a
+        exact hja hbagEq
       have hx_cd : x ≠ c d := by
         intro h
-        subst x
-        exact hid (hcycleBag d)
+        have hbagEq : bag x = d := by simpa [h] using hcycleBag d
+        exact hid hbagEq
       have hx_y : x ≠ y := by
         intro h
-        subst y
-        exact (cycleGraph 5).loopless (bag x) hij
+        have hbagEq : bag x = bag y := congrArg bag h
+        have hloop : (cycleGraph 5).Adj (bag x) (bag x) := by simpa [hbagEq] using hij
+        exact (cycleGraph 5).loopless (bag x) hloop
       have hcb_y : c b ≠ y := by
         intro h
-        subst y
-        exact hnxy hxb
+        have hmissing : G.Adj x y := by simpa [h] using hxb
+        exact hnxy hmissing
       apply hNoP5 (c a) x (c b) (c d) y
       unfold FormsInducedP5
       exact ⟨hax.ne, hca_cb, hca_cd, hca_y,
