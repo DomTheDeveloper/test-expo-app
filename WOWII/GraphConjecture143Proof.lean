@@ -72,12 +72,18 @@ lemma conjecture143_of_large_sigma (G : SimpleGraph α) [DecidableRel G.Adj]
     (hσ : 2 ≤ secondSmallestDegree G) :
     (G.girth : ℝ) + 1 ≤
       (largestInducedTreeSize G : ℝ) * (secondSmallestDegree G : ℝ) := by
-  have htreeR : (G.girth : ℝ) - 1 ≤ (largestInducedTreeSize G : ℝ) := by
-    exact_mod_cast htree
+  have htreeNat : G.girth ≤ largestInducedTreeSize G + 1 := by omega
+  have htreeR : (G.girth : ℝ) ≤ (largestInducedTreeSize G : ℝ) + 1 := by
+    exact_mod_cast htreeNat
   have hσR : (2 : ℝ) ≤ secondSmallestDegree G := by
     exact_mod_cast hσ
   have hgirthR : (3 : ℝ) ≤ G.girth := by
     exact_mod_cast hgirth
-  nlinarith [mul_le_mul_of_nonneg htreeR hσR (by positivity) (by positivity)]
+  have htreeNonneg : (0 : ℝ) ≤ largestInducedTreeSize G := by positivity
+  have hmul :
+      2 * (largestInducedTreeSize G : ℝ) ≤
+        (largestInducedTreeSize G : ℝ) * (secondSmallestDegree G : ℝ) := by
+    nlinarith [mul_le_mul_of_nonneg_left hσR htreeNonneg]
+  nlinarith
 
 end WrittenOnTheWallII.GraphConjecture143
