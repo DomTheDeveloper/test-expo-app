@@ -197,4 +197,76 @@ lemma conjecture143_of_large_sigma (G : SimpleGraph α) [DecidableRel G.Adj]
     nlinarith [mul_le_mul_of_nonneg_left hσR htreeNonneg]
   nlinarith
 
+/-- Any inhabited property of finite vertex sets has a witness of maximum cardinality. -/
+lemma exists_max_card_finset_main (P : Finset α → Prop) [DecidablePred P]
+    (hP : ∃ s : Finset α, P s) :
+    ∃ s : Finset α, P s ∧ ∀ t : Finset α, P t → t.card ≤ s.card := by
+  let C : Finset (Finset α) := Finset.univ.powerset.filter P
+  have hC : C.Nonempty := by
+    obtain ⟨s, hs⟩ := hP
+    refine ⟨s, ?_⟩
+    simp [C, hs]
+  let M : Finset ℕ := C.image Finset.card
+  have hM : M.Nonempty := Finset.image_nonempty.mpr hC
+  let m := M.max' hM
+  have hmM : m ∈ M := M.max'_mem hM
+  obtain ⟨s, hsC, hscard⟩ := Finset.mem_image.mp hmM
+  refine ⟨s, ?_, ?_⟩
+  · exact (Finset.mem_filter.mp hsC).2
+  · intro t ht
+    have htC : t ∈ C := by simp [C, ht]
+    have htM : t.card ∈ M := Finset.mem_image.mpr ⟨t, htC, rfl⟩
+    have hle : t.card ≤ m := M.le_max' t.card htM
+    simpa [m, hscard] using hle
+
+/-- A nontrivial connected set has a graph edge crossing to its complement. -/
+lemma exists_crossing_edge_main {G : SimpleGraph α} (hG : G.Connected)
+    {S : Set α} (hS : S.Nonempty) (hS_ne : S ≠ Set.univ) :
+    ∃ u ∈ S, ∃ v ∉ S, G.Adj u v := by
+  obtain ⟨u, hu⟩ := hS
+  have hex : ∃ v : α, v ∉ S := by
+    by_contra h
+    push_neg at h
+    apply hS_ne
+    ext x
+    simp [h x]
+  obtain ⟨v, hv⟩ := hex
+  have aux : ∀ {a b : α} (p : G.Walk a b), a ∈ S → b ∉ S →
+      ∃ x ∈ S, ∃ y ∉ S, G.Adj x y := by
+    intro a b p
+    induction p with
+    | nil =>
+        intro ha hb
+        exact (hb ha).elim
+    | @cons a c b hac p ih =>
+        intro ha hb
+        by_cases hc : c ∈ S
+        · exact ih hc hb
+        · exact ⟨a, ha, c, hc, hac⟩
+  exact (hG u v).elim fun p => aux p hu hv
+
+/-- Among all induced trees containing two specified vertices, one has maximum cardinality. -/
+lemma exists_max_induced_tree_containing (G : SimpleGraph α) [DecidableRel G.Adj]
+    (hG : G.Connected) (x y : α) :
+    ∃ S : Finset α,
+      x ∈ S ∧ y ∈ S ∧ (G.induce (S : Set α)).IsTree ∧
+      ∀ T : Finset α,
+        x ∈ T → y ∈ T → (G.induce (T : Set α)).IsTree → T.card ≤ S.card := by
+  let P : Finset α → Prop := fun S =>
+    x ∈ S ∧ y ∈ S ∧ (G.induce (S : Set α)).IsTree
+  have hP : ∃ S : Finset α, P S := by
+    obtain ⟨p, hp, hgeo⟩ := hG.exists_path_of_dist x y
+    refine ⟨p.support.toFinset, ?_, ?_, ?_⟩
+    · simp
+    · simp
+    · have hset : (↑p.support.toFinset : Set α) = {z : α | z ∈ p.support} := by
+        ext z
+        simp
+      rw [hset]
+      exact geodesic_support_induces_tree hgeo
+  obtain ⟨S, hSP, hmax⟩ := exists_max_card_finset_main P hP
+  refine ⟨S, hSP.1, hSP.2.1, hSP.2.2, ?_⟩
+  intro T hxT hyT htreeT
+  exact hmax T ⟨hxT, hyT, htreeT⟩
+
 end WrittenOnTheWallII.GraphConjecture143
