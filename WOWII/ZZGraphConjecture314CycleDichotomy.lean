@@ -70,7 +70,7 @@ lemma exists_bipartite_side_of_no_inducedC5
   have hle : G.dist r x ≤ 3 := dist_le_three_of_no_FormsInducedP5 G hG hNoP5 r x
   interval_cases hd : G.dist r x
   · have hx : x = r := (hG.dist_eq_zero_iff).mp hd
-    have hy0 : G.dist r y = 0 := by simpa [← heq] using hd
+    have hy0 : G.dist r y = 0 := by omega
     have hy : y = r := (hG.dist_eq_zero_iff).mp hy0
     subst x
     subst y
@@ -122,11 +122,11 @@ lemma exists_bipartite_side_of_no_inducedC5
       have hr_ne_x : r ≠ x := by
         intro h
         subst x
-        exact hrx (by simpa using hra)
+        simp at hd
       have hr_ne_y : r ≠ y := by
         intro h
         subst y
-        exact hry (by simpa using hrb)
+        simp at hdy
       have hr_ne_b : r ≠ b := hrb.ne
       have ha_ne_x : a ≠ x := hax.ne
       have ha_ne_y : a ≠ y := by
@@ -183,17 +183,19 @@ lemma exists_bipartite_side_of_no_inducedC5
       exact hTriFree b x y hbx hxy h.symm
     have hr_ne_a : r ≠ a := hra.ne
     have hr_ne_b : r ≠ b := by
-      intro h
-      subst b
-      exact hrb (by simpa using hra)
+      intro hrbEq
+      have hget : p.getVert 0 = p.getVert 2 := by
+        simpa [b] using hrbEq
+      have hidx := hp.getVert_injOn (by omega) (by omega) hget
+      omega
     have hr_ne_x : r ≠ x := by
       intro h
       subst x
-      exact hrx (by simpa using hra)
+      simp at hd
     have hr_ne_y : r ≠ y := by
       intro h
       subst y
-      exact hry (by simpa using hra)
+      simp at hdy
     have ha_ne_b : a ≠ b := hab.ne
     have ha_ne_x : a ≠ x := by
       intro h
