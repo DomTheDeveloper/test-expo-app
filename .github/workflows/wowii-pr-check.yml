@@ -25,6 +25,12 @@ jobs:
           curl https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -sSf | sh -s -- -y
           echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
 
+      - name: Restore Formal Conjectures build cache
+        uses: actions/cache@v4
+        with:
+          path: formal-conjectures/.lake/build
+          key: wowii-formal-conjectures-${{ runner.os }}-${{ hashFiles('formal-conjectures/lean-toolchain', 'formal-conjectures/lake-manifest.json') }}
+
       - name: Download Mathlib cache
         working-directory: formal-conjectures
         run: lake exe cache get
