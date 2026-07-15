@@ -72,4 +72,29 @@ lemma girth_sub_one_le_largestInducedTreeSize (G : SimpleGraph α)
       rw [hset]
       exact htree
 
+/-- The full cyclic branch when the second-smallest degree is at least two. -/
+theorem conjecture143_of_cyclic_sigma_ge_two (G : SimpleGraph α)
+    [DecidableRel G.Adj] (hcyc : ¬G.IsAcyclic)
+    (hσ : 2 ≤ secondSmallestDegree G) :
+    (G.girth : ℝ) + 1 ≤
+      (largestInducedTreeSize G : ℝ) * (secondSmallestDegree G : ℝ) := by
+  obtain ⟨a, w, hw, hgw⟩ := SimpleGraph.exists_girth_eq_length.mpr hcyc
+  have hgirth : 3 ≤ G.girth := by
+    rw [hgw]
+    exact hw.three_le_length
+  have htree := girth_sub_one_le_largestInducedTreeSize G hcyc
+  have htreeNat : G.girth ≤ largestInducedTreeSize G + 1 := by omega
+  have htreeR : (G.girth : ℝ) ≤ (largestInducedTreeSize G : ℝ) + 1 := by
+    exact_mod_cast htreeNat
+  have hσR : (2 : ℝ) ≤ secondSmallestDegree G := by
+    exact_mod_cast hσ
+  have hgirthR : (3 : ℝ) ≤ G.girth := by
+    exact_mod_cast hgirth
+  have htreeNonneg : (0 : ℝ) ≤ largestInducedTreeSize G := by positivity
+  have hmul :
+      2 * (largestInducedTreeSize G : ℝ) ≤
+        (largestInducedTreeSize G : ℝ) * (secondSmallestDegree G : ℝ) := by
+    nlinarith [mul_le_mul_of_nonneg_left hσR htreeNonneg]
+  nlinarith
+
 end WrittenOnTheWallII.GraphConjecture143
