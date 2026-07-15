@@ -88,7 +88,7 @@ theorem counterexample160_refutes_statement :
 /-- Repository-style resolution: the universally quantified conjecture is false. -/
 theorem conjecture160_false :
     answer(False) ↔
-      ∀ (α : Type*) [Fintype α] [DecidableEq α] [Nontrivial α]
+      ∀ (α : Type) [Fintype α] [DecidableEq α] [Nontrivial α]
         (G : SimpleGraph α) [DecidableRel G.Adj] (_ : G.Connected),
         let maxL := (Finset.univ.image (indepNeighborsCard G)).max' (by simp)
         let maxT := maxTrianglesAtVertex G
