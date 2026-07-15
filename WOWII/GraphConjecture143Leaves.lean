@@ -11,14 +11,8 @@ open Classical SimpleGraph
 variable {α : Type*} [Fintype α] [DecidableEq α]
 
 lemma degree_pos_of_connected [Nontrivial α] {G : SimpleGraph α}
-    [DecidableRel G.Adj] (hG : G.Connected) (v : α) : 0 < G.degree v := by
-  obtain ⟨v', w, hvw⟩ := exists_pair_ne α
-  obtain ⟨p⟩ := hG v w
-  obtain ⟨u, huv⟩ : ∃ u, G.Adj v u := by
-    cases p with
-    | nil => exact (hvw (by assumption)).elim
-    | cons h p => exact ⟨_, h⟩
-  exact Finset.card_pos.mpr ⟨u, by simpa using huv⟩
+    [DecidableRel G.Adj] (hG : G.Connected) (v : α) : 0 < G.degree v :=
+  hG.preconnected.degree_pos_of_nontrivial v
 
 /-- If a connected nontrivial graph has second-smallest degree one, then it has
 at least two distinct degree-one vertices. -/
