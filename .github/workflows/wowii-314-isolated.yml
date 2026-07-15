@@ -58,7 +58,6 @@ jobs:
           set -uo pipefail
           export LEAN_PATH="$PWD:${LEAN_PATH:-}"
           : > wowii-314-build.log
-          status=0
           files=(
             WOWII/GraphConjecture143Proof.lean
             WOWII/ZZGraphConjecture314Core.lean
@@ -82,9 +81,8 @@ jobs:
             echo "=== Checking $f ===" | tee -a wowii-314-build.log
             lake env lean -o "${f%.lean}.olean" "$f" 2>&1 | tee -a wowii-314-build.log
             code=${PIPESTATUS[0]}
-            if [ "$code" -ne 0 ]; then status=$code; fi
+            if [ "$code" -ne 0 ]; then exit "$code"; fi
           done
-          exit "$status"
 
       - name: Reject hidden sorry dependencies
         if: always()
