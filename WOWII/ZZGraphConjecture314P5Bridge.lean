@@ -56,6 +56,7 @@ lemma largestInducedPathSize_ge_five_of_FormsInducedP5
         constructor
         · exact p.toSubgraph.adj_sub
         · intro hab
+          have hba : G.Adj b a := hab.symm
           rw [Walk.adj_toSubgraph_iff_mem_edges]
           simp only [S, Finset.coe_insert, Finset.coe_singleton, Set.mem_insert_iff,
             Set.mem_singleton_iff] at ha hb
@@ -78,8 +79,13 @@ lemma largestInducedPathSize_ge_five_of_FormsInducedP5
         apply Subtype.ext
         exact hi.symm
       subst w
-      change (p.toSubgraph.neighborSet (p.getVert 0)).ncard ≤ 2
-      rw [show p.getVert 0 = x0 by simp, hp.neighborSet_toSubgraph_startpoint (by simp [p])]
+      have hcard :
+          Fintype.card ↥(p.toSubgraph.coe.neighborSet ⟨p.getVert 0, hmem⟩) =
+            Fintype.card ↥(p.toSubgraph.neighborSet (p.getVert 0)) :=
+        Fintype.card_congr (p.toSubgraph.coeNeighborSetEquiv _)
+      rw [← card_neighborSet_eq_degree, hcard,
+        show p.getVert 0 = x0 by simp,
+        hp.neighborSet_toSubgraph_startpoint (by simp [p])]
       simp
     · have hmem : p.getVert 1 ∈ p.toSubgraph.verts := by
         apply p.mem_verts_toSubgraph.mpr
@@ -88,8 +94,12 @@ lemma largestInducedPathSize_ge_five_of_FormsInducedP5
         apply Subtype.ext
         exact hi.symm
       subst w
-      change (p.toSubgraph.neighborSet (p.getVert 1)).ncard ≤ 2
-      rw [hp.neighborSet_toSubgraph_internal (by omega) (by simp [p])]
+      have hcard :
+          Fintype.card ↥(p.toSubgraph.coe.neighborSet ⟨p.getVert 1, hmem⟩) =
+            Fintype.card ↥(p.toSubgraph.neighborSet (p.getVert 1)) :=
+        Fintype.card_congr (p.toSubgraph.coeNeighborSetEquiv _)
+      rw [← card_neighborSet_eq_degree, hcard,
+        hp.neighborSet_toSubgraph_internal (by omega) (by simp [p])]
       simp
     · have hmem : p.getVert 2 ∈ p.toSubgraph.verts := by
         apply p.mem_verts_toSubgraph.mpr
@@ -98,8 +108,12 @@ lemma largestInducedPathSize_ge_five_of_FormsInducedP5
         apply Subtype.ext
         exact hi.symm
       subst w
-      change (p.toSubgraph.neighborSet (p.getVert 2)).ncard ≤ 2
-      rw [hp.neighborSet_toSubgraph_internal (by omega) (by simp [p])]
+      have hcard :
+          Fintype.card ↥(p.toSubgraph.coe.neighborSet ⟨p.getVert 2, hmem⟩) =
+            Fintype.card ↥(p.toSubgraph.neighborSet (p.getVert 2)) :=
+        Fintype.card_congr (p.toSubgraph.coeNeighborSetEquiv _)
+      rw [← card_neighborSet_eq_degree, hcard,
+        hp.neighborSet_toSubgraph_internal (by omega) (by simp [p])]
       simp
     · have hmem : p.getVert 3 ∈ p.toSubgraph.verts := by
         apply p.mem_verts_toSubgraph.mpr
@@ -108,8 +122,12 @@ lemma largestInducedPathSize_ge_five_of_FormsInducedP5
         apply Subtype.ext
         exact hi.symm
       subst w
-      change (p.toSubgraph.neighborSet (p.getVert 3)).ncard ≤ 2
-      rw [hp.neighborSet_toSubgraph_internal (by omega) (by simp [p])]
+      have hcard :
+          Fintype.card ↥(p.toSubgraph.coe.neighborSet ⟨p.getVert 3, hmem⟩) =
+            Fintype.card ↥(p.toSubgraph.neighborSet (p.getVert 3)) :=
+        Fintype.card_congr (p.toSubgraph.coeNeighborSetEquiv _)
+      rw [← card_neighborSet_eq_degree, hcard,
+        hp.neighborSet_toSubgraph_internal (by omega) (by simp [p])]
       simp
     · have hmem : p.getVert 4 ∈ p.toSubgraph.verts := by
         apply p.mem_verts_toSubgraph.mpr
@@ -118,9 +136,13 @@ lemma largestInducedPathSize_ge_five_of_FormsInducedP5
         apply Subtype.ext
         exact hi.symm
       subst w
-      change (p.toSubgraph.neighborSet (p.getVert 4)).ncard ≤ 2
-      have hend : p.getVert 4 = x4 := by simp [p]
-      rw [hend, hp.neighborSet_toSubgraph_endpoint (by simp [p])]
+      have hcard :
+          Fintype.card ↥(p.toSubgraph.coe.neighborSet ⟨p.getVert 4, hmem⟩) =
+            Fintype.card ↥(p.toSubgraph.neighborSet (p.getVert 4)) :=
+        Fintype.card_congr (p.toSubgraph.coeNeighborSetEquiv _)
+      rw [← card_neighborSet_eq_degree, hcard,
+        show p.getVert 4 = x4 by simp [p],
+        hp.neighborSet_toSubgraph_endpoint (by simp [p])]
       simp
   have hdeg : ∀ v : (S : Set α), (G.induce (S : Set α)).degree v ≤ 2 := by
     intro v
