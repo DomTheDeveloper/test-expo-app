@@ -13,7 +13,6 @@ open WrittenOnTheWallII.GraphConjecture143
 
 variable {α : Type*} [Fintype α] [DecidableEq α]
 
-set_option maxHeartbeats 1000000 in
 lemma largestInducedPathSize_ge_five_of_FormsInducedP5
     (G : SimpleGraph α) [DecidableRel G.Adj]
     {x0 x1 x2 x3 x4 : α}
@@ -57,7 +56,6 @@ lemma largestInducedPathSize_ge_five_of_FormsInducedP5
         constructor
         · exact p.toSubgraph.adj_sub
         · intro hab
-          have hba : G.Adj b a := hab.symm
           rw [Walk.adj_toSubgraph_iff_mem_edges]
           simp only [S, Finset.coe_insert, Finset.coe_singleton, Set.mem_insert_iff,
             Set.mem_singleton_iff] at ha hb
@@ -66,118 +64,86 @@ lemma largestInducedPathSize_ge_five_of_FormsInducedP5
             simp_all [p, Sym2.eq, Sym2.rel_iff'] }
   have htree : (G.induce (S : Set α)).IsTree := by
     exact hiso.isTree_iff.mpr (path_toSubgraph_isTree hp)
-  have hpdeg : ∀ w : p.toSubgraph.verts, p.toSubgraph.coe.degree w ≤ 2 := by
-    intro w
-    have hwSupport : (w : α) ∈ p.support := p.mem_verts_toSubgraph.mp w.property
-    obtain ⟨i, hi, hil⟩ := Walk.mem_support_iff_exists_getVert.mp hwSupport
-    have hlen : p.length = 4 := by simp [p]
-    have hi4 : i ≤ 4 := by simpa [hlen] using hil
-    interval_cases i
-    · have hmem : p.getVert 0 ∈ p.toSubgraph.verts := by
-        apply p.mem_verts_toSubgraph.mpr
-        exact Walk.mem_support_iff_exists_getVert.mpr ⟨0, rfl, by simp [p]⟩
-      have hw : w = ⟨p.getVert 0, hmem⟩ := by
-        apply Subtype.ext
-        exact hi.symm
-      subst w
-      have hcard :
-          Fintype.card ↥(p.toSubgraph.coe.neighborSet ⟨p.getVert 0, hmem⟩) =
-            Fintype.card ↥(p.toSubgraph.neighborSet (p.getVert 0)) :=
-        Fintype.card_congr (p.toSubgraph.coeNeighborSetEquiv _)
-      have hset : p.toSubgraph.neighborSet (p.getVert 0) = {p.snd} := by
-        simpa using hp.neighborSet_toSubgraph_startpoint (by simp [p])
-      have hbound : Fintype.card ↥(p.toSubgraph.neighborSet (p.getVert 0)) ≤ 2 := by
-        calc
-          Fintype.card ↥(p.toSubgraph.neighborSet (p.getVert 0)) =
-              Fintype.card ↥({p.snd} : Set α) :=
-            Fintype.card_congr (Equiv.setCongr hset)
-          _ ≤ 2 := by simp
-      simpa only [card_neighborSet_eq_degree] using hcard.le.trans hbound
-    · have hmem : p.getVert 1 ∈ p.toSubgraph.verts := by
-        apply p.mem_verts_toSubgraph.mpr
-        exact Walk.mem_support_iff_exists_getVert.mpr ⟨1, rfl, by simp [p]⟩
-      have hw : w = ⟨p.getVert 1, hmem⟩ := by
-        apply Subtype.ext
-        exact hi.symm
-      subst w
-      have hcard :
-          Fintype.card ↥(p.toSubgraph.coe.neighborSet ⟨p.getVert 1, hmem⟩) =
-            Fintype.card ↥(p.toSubgraph.neighborSet (p.getVert 1)) :=
-        Fintype.card_congr (p.toSubgraph.coeNeighborSetEquiv _)
-      have hset := hp.neighborSet_toSubgraph_internal (show (1 : ℕ) ≠ 0 by omega) (by simp [p])
-      have hbound : Fintype.card ↥(p.toSubgraph.neighborSet (p.getVert 1)) ≤ 2 := by
-        calc
-          Fintype.card ↥(p.toSubgraph.neighborSet (p.getVert 1)) =
-              Fintype.card ↥({p.getVert (1 - 1), p.getVert (1 + 1)} : Set α) :=
-            Fintype.card_congr (Equiv.setCongr hset)
-          _ ≤ 2 := by simp
-      simpa only [card_neighborSet_eq_degree] using hcard.le.trans hbound
-    · have hmem : p.getVert 2 ∈ p.toSubgraph.verts := by
-        apply p.mem_verts_toSubgraph.mpr
-        exact Walk.mem_support_iff_exists_getVert.mpr ⟨2, rfl, by simp [p]⟩
-      have hw : w = ⟨p.getVert 2, hmem⟩ := by
-        apply Subtype.ext
-        exact hi.symm
-      subst w
-      have hcard :
-          Fintype.card ↥(p.toSubgraph.coe.neighborSet ⟨p.getVert 2, hmem⟩) =
-            Fintype.card ↥(p.toSubgraph.neighborSet (p.getVert 2)) :=
-        Fintype.card_congr (p.toSubgraph.coeNeighborSetEquiv _)
-      have hset := hp.neighborSet_toSubgraph_internal (show (2 : ℕ) ≠ 0 by omega) (by simp [p])
-      have hbound : Fintype.card ↥(p.toSubgraph.neighborSet (p.getVert 2)) ≤ 2 := by
-        calc
-          Fintype.card ↥(p.toSubgraph.neighborSet (p.getVert 2)) =
-              Fintype.card ↥({p.getVert (2 - 1), p.getVert (2 + 1)} : Set α) :=
-            Fintype.card_congr (Equiv.setCongr hset)
-          _ ≤ 2 := by simp
-      simpa only [card_neighborSet_eq_degree] using hcard.le.trans hbound
-    · have hmem : p.getVert 3 ∈ p.toSubgraph.verts := by
-        apply p.mem_verts_toSubgraph.mpr
-        exact Walk.mem_support_iff_exists_getVert.mpr ⟨3, rfl, by simp [p]⟩
-      have hw : w = ⟨p.getVert 3, hmem⟩ := by
-        apply Subtype.ext
-        exact hi.symm
-      subst w
-      have hcard :
-          Fintype.card ↥(p.toSubgraph.coe.neighborSet ⟨p.getVert 3, hmem⟩) =
-            Fintype.card ↥(p.toSubgraph.neighborSet (p.getVert 3)) :=
-        Fintype.card_congr (p.toSubgraph.coeNeighborSetEquiv _)
-      have hset := hp.neighborSet_toSubgraph_internal (show (3 : ℕ) ≠ 0 by omega) (by simp [p])
-      have hbound : Fintype.card ↥(p.toSubgraph.neighborSet (p.getVert 3)) ≤ 2 := by
-        calc
-          Fintype.card ↥(p.toSubgraph.neighborSet (p.getVert 3)) =
-              Fintype.card ↥({p.getVert (3 - 1), p.getVert (3 + 1)} : Set α) :=
-            Fintype.card_congr (Equiv.setCongr hset)
-          _ ≤ 2 := by simp
-      simpa only [card_neighborSet_eq_degree] using hcard.le.trans hbound
-    · have hmem : p.getVert 4 ∈ p.toSubgraph.verts := by
-        apply p.mem_verts_toSubgraph.mpr
-        exact Walk.mem_support_iff_exists_getVert.mpr ⟨4, rfl, by simp [p]⟩
-      have hw : w = ⟨p.getVert 4, hmem⟩ := by
-        apply Subtype.ext
-        exact hi.symm
-      subst w
-      have hcard :
-          Fintype.card ↥(p.toSubgraph.coe.neighborSet ⟨p.getVert 4, hmem⟩) =
-            Fintype.card ↥(p.toSubgraph.neighborSet (p.getVert 4)) :=
-        Fintype.card_congr (p.toSubgraph.coeNeighborSetEquiv _)
-      have hset : p.toSubgraph.neighborSet (p.getVert 4) = {p.penultimate} := by
-        simpa [p] using hp.neighborSet_toSubgraph_endpoint (by simp [p])
-      have hbound : Fintype.card ↥(p.toSubgraph.neighborSet (p.getVert 4)) ≤ 2 := by
-        calc
-          Fintype.card ↥(p.toSubgraph.neighborSet (p.getVert 4)) =
-              Fintype.card ↥({p.penultimate} : Set α) :=
-            Fintype.card_congr (Equiv.setCongr hset)
-          _ ≤ 2 := by simp
-      simpa only [card_neighborSet_eq_degree] using hcard.le.trans hbound
+  let X0 : (S : Set α) := ⟨x0, by simp [S]⟩
+  let X1 : (S : Set α) := ⟨x1, by simp [S]⟩
+  let X2 : (S : Set α) := ⟨x2, by simp [S]⟩
+  let X3 : (S : Set α) := ⟨x3, by simp [S]⟩
+  let X4 : (S : Set α) := ⟨x4, by simp [S]⟩
+  have hmem (w : (S : Set α)) :
+      (w : α) = x0 ∨ (w : α) = x1 ∨ (w : α) = x2 ∨
+      (w : α) = x3 ∨ (w : α) = x4 := by
+    simpa [S] using w.property
+  have degree_le_two_of_pair
+      (v a b : (S : Set α))
+      (hv : ∀ w : (S : Set α), (G.induce (S : Set α)).Adj v w → w = a ∨ w = b) :
+      (G.induce (S : Set α)).degree v ≤ 2 := by
+    rw [← card_neighborFinset_eq_degree]
+    calc
+      ((G.induce (S : Set α)).neighborFinset v).card ≤ ({a, b} : Finset (S : Set α)).card := by
+        apply Finset.card_le_card
+        intro w hw
+        simp only [Finset.mem_insert, Finset.mem_singleton]
+        apply hv w
+        simpa only [mem_neighborFinset] using hw
+      _ ≤ 2 := Finset.card_le_two
   have hdeg : ∀ v : (S : Set α), (G.induce (S : Set α)).degree v ≤ 2 := by
     intro v
-    have hdegree :
-        (G.induce (S : Set α)).degree v = p.toSubgraph.coe.degree (hiso v) := by
-      rw [← card_neighborSet_eq_degree, ← card_neighborSet_eq_degree]
-      exact Fintype.card_congr (hiso.mapNeighborSet v)
-    rw [hdegree]
-    exact hpdeg (hiso v)
+    rcases hmem v with hv0 | hv1 | hv2 | hv3 | hv4
+    · have hv : v = X0 := by apply Subtype.ext; exact hv0
+      subst v
+      apply degree_le_two_of_pair X0 X1 X1
+      intro w hw
+      change G.Adj x0 (w : α) at hw
+      rcases hmem w with hw0 | hw1 | hw2 | hw3 | hw4
+      · exact (G.loopless x0 (by simpa [hw0] using hw)).elim
+      · left; apply Subtype.ext; exact hw1
+      · exact (hn02 (by simpa [hw2] using hw)).elim
+      · exact (hn03 (by simpa [hw3] using hw)).elim
+      · exact (hn04 (by simpa [hw4] using hw)).elim
+    · have hv : v = X1 := by apply Subtype.ext; exact hv1
+      subst v
+      apply degree_le_two_of_pair X1 X0 X2
+      intro w hw
+      change G.Adj x1 (w : α) at hw
+      rcases hmem w with hw0 | hw1 | hw2 | hw3 | hw4
+      · left; apply Subtype.ext; exact hw0
+      · exact (G.loopless x1 (by simpa [hw1] using hw)).elim
+      · right; apply Subtype.ext; exact hw2
+      · exact (hn13 (by simpa [hw3] using hw)).elim
+      · exact (hn14 (by simpa [hw4] using hw)).elim
+    · have hv : v = X2 := by apply Subtype.ext; exact hv2
+      subst v
+      apply degree_le_two_of_pair X2 X1 X3
+      intro w hw
+      change G.Adj x2 (w : α) at hw
+      rcases hmem w with hw0 | hw1 | hw2 | hw3 | hw4
+      · exact (hn02 (by simpa [hw0] using hw.symm)).elim
+      · left; apply Subtype.ext; exact hw1
+      · exact (G.loopless x2 (by simpa [hw2] using hw)).elim
+      · right; apply Subtype.ext; exact hw3
+      · exact (hn24 (by simpa [hw4] using hw)).elim
+    · have hv : v = X3 := by apply Subtype.ext; exact hv3
+      subst v
+      apply degree_le_two_of_pair X3 X2 X4
+      intro w hw
+      change G.Adj x3 (w : α) at hw
+      rcases hmem w with hw0 | hw1 | hw2 | hw3 | hw4
+      · exact (hn03 (by simpa [hw0] using hw.symm)).elim
+      · exact (hn13 (by simpa [hw1] using hw.symm)).elim
+      · left; apply Subtype.ext; exact hw2
+      · exact (G.loopless x3 (by simpa [hw3] using hw)).elim
+      · right; apply Subtype.ext; exact hw4
+    · have hv : v = X4 := by apply Subtype.ext; exact hv4
+      subst v
+      apply degree_le_two_of_pair X4 X3 X3
+      intro w hw
+      change G.Adj x4 (w : α) at hw
+      rcases hmem w with hw0 | hw1 | hw2 | hw3 | hw4
+      · exact (hn04 (by simpa [hw0] using hw.symm)).elim
+      · exact (hn14 (by simpa [hw1] using hw.symm)).elim
+      · exact (hn24 (by simpa [hw2] using hw.symm)).elim
+      · left; apply Subtype.ext; exact hw3
+      · exact (G.loopless x4 (by simpa [hw4] using hw)).elim
   unfold largestInducedPathSize
   apply le_csSup
   · exact ⟨Fintype.card α, by
