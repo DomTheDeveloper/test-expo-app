@@ -32,6 +32,34 @@ lemma induce_pair_isTree_of_adj {G : SimpleGraph α} {u v : α} (huv : G.Adj u v
   simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at hz hsmem htmem
   grind
 
+lemma path_toSubgraph_spanningCoe_isAcyclic {G : SimpleGraph α} {u v : α}
+    {p : G.Walk u v} (hp : p.IsPath) : p.toSubgraph.spanningCoe.IsAcyclic := by
+  induction p with
+  | nil => simp [Walk.toSubgraph]
+  | @cons u v w huv p ih =>
+      rw [Walk.cons_isPath_iff] at hp
+      have ihA := ih hp.1
+      have hu_not : u ∉ p.toSubgraph.verts := by
+        simpa [Walk.mem_verts_toSubgraph] using hp.2
+      have hNbr : p.toSubgraph.spanningCoe.neighborSet u = ∅ := by
+        ext x
+        constructor
+        · intro hx
+          have hu_mem : u ∈ p.toSubgraph.verts := p.toSubgraph.edge_vert hx
+          exact (hu_not hu_mem).elim
+        · simp
+      have hnreach : ¬p.toSubgraph.spanningCoe.Reachable u v :=
+        not_reachable_of_neighborSet_left_eq_empty huv.ne hNbr
+      have hadd :=
+        (isAcyclic_add_edge_iff_of_not_reachable u v hnreach).2 ihA
+      simpa [Walk.toSubgraph, sup_comm] using hadd
+
+lemma path_toSubgraph_isTree {G : SimpleGraph α} {u v : α} {p : G.Walk u v}
+    (hp : p.IsPath) : p.toSubgraph.coe.IsTree := by
+  refine ⟨p.toSubgraph_connected.coe, ?_⟩
+  exact IsAcyclic.embedding p.toSubgraph.coeEmbeddingSpanningCoe
+    (path_toSubgraph_spanningCoe_isAcyclic hp)
+
 lemma two_le_largestInducedTreeSize (G : SimpleGraph α) [DecidableRel G.Adj]
     (hG : G.Connected) [Nontrivial α] :
     2 ≤ largestInducedTreeSize G := by
