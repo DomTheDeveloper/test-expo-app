@@ -3,8 +3,9 @@ name: WOWII 314 Isolated Lean Check
 on:
   pull_request:
     paths:
-      - 'WOWII/**'
+      - 'WOWII/ZZGraphConjecture314*.lean'
       - '.github/workflows/wowii-314-isolated.yml'
+      - '.audit314/**'
   push:
     branches:
       - formal-conjectures-wowii-143
