@@ -18,13 +18,12 @@ lemma geodesic_support_isInducedPath {G : SimpleGraph α} {u v : α}
   have hp : p.IsPath := p.isPath_of_length_eq_dist hgeo
   refine ⟨hp.support_nodup, ?_⟩
   intro i j
+  have hlen : p.support.length = p.length + 1 := p.length_support
   have hi : i.val ≤ p.length := by
-    have := i.isLt
-    rw [p.length_support] at this
+    have hil := i.isLt
     omega
   have hj : j.val ≤ p.length := by
-    have := j.isLt
-    rw [p.length_support] at this
+    have hjl := j.isLt
     omega
   have hgeti : p.support.get i = p.getVert i.val := by
     simpa using p.support_getElem_eq_getVert i.isLt
@@ -38,14 +37,16 @@ lemma geodesic_support_isInducedPath {G : SimpleGraph α} {u v : α}
       Walk.adj_toSubgraph_iff_mem_edges.mpr hedge
     obtain ⟨k, hk, hklt⟩ := p.toSubgraph_adj_iff.mp hsub
     simp only [Sym2.eq, Sym2.rel_iff', Prod.mk.injEq, Prod.swap_prod_mk] at hk
+    have hk0 : k ≤ p.length := Nat.le_of_lt hklt
+    have hk1 : k + 1 ≤ p.length := hklt
     rcases hk with ⟨hki, hkj⟩ | ⟨hkj, hki⟩
     · left
-      have hik : i.val = k := hp.getVert_injOn hi (by omega) hki.symm
-      have hjk : j.val = k + 1 := hp.getVert_injOn hj (by omega) hkj.symm
+      have hik : i.val = k := hp.getVert_injOn hi hk0 hki.symm
+      have hjk : j.val = k + 1 := hp.getVert_injOn hj hk1 hkj.symm
       omega
     · right
-      have hjk : j.val = k := hp.getVert_injOn hj (by omega) hkj.symm
-      have hik : i.val = k + 1 := hp.getVert_injOn hi (by omega) hki.symm
+      have hjk : j.val = k := hp.getVert_injOn hj hk0 hkj.symm
+      have hik : i.val = k + 1 := hp.getVert_injOn hi hk1 hki.symm
       omega
   · rintro (hij | hji)
     · rw [← hij]
@@ -59,7 +60,8 @@ lemma induced_path_card_le_path (G : SimpleGraph α) (l : List α)
   let P := Finset.univ.filter (fun s : Finset α =>
     ∃ q : List α, q.toFinset = s ∧ isInducedPath G q)
   have hlP : l.toFinset ∈ P := by
-    simp [P, hl]
+    apply Finset.mem_filter.mpr
+    exact ⟨Finset.mem_univ _, l, rfl, hl⟩
   have hmem : l.toFinset.card ∈ P.image Finset.card :=
     Finset.mem_image.mpr ⟨l.toFinset, hlP, rfl⟩
   have hnon : (P.image Finset.card).Nonempty := ⟨_, hmem⟩
