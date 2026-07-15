@@ -57,11 +57,10 @@ lemma exists_second_cycle_neighbor
     exact h j hji hxj
   have hx_not_cycle : ∀ k : Fin 5, x ≠ c k := by
     intro k hxk
-    subst x
-    have hp := cycle_adj_plus hc k
-    have hm := cycle_adj_minus hc k
-    have hpi : k + 1 = i := honly (k + 1) hp
-    have hmi : k - 1 = i := honly (k - 1) hm
+    have hpX : G.Adj x (c (k + 1)) := by simpa [hxk] using cycle_adj_plus hc k
+    have hmX : G.Adj x (c (k - 1)) := by simpa [hxk] using cycle_adj_minus hc k
+    have hpi : k + 1 = i := honly (k + 1) hpX
+    have hmi : k - 1 = i := honly (k - 1) hmX
     have : k + 1 = k - 1 := hpi.trans hmi.symm
     fin_cases k <;> simp_all
   have hx1 : ¬G.Adj x (c (i + 1)) := by
