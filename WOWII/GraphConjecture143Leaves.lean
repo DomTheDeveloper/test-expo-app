@@ -14,6 +14,31 @@ lemma degree_pos_of_connected [Nontrivial α] {G : SimpleGraph α}
     [DecidableRel G.Adj] (hG : G.Connected) (v : α) : 0 < G.degree v :=
   hG.preconnected.degree_pos_of_nontrivial v
 
+/-- The second-smallest degree of a connected nontrivial finite graph is positive. -/
+lemma secondSmallestDegree_pos_of_connected [Nontrivial α]
+    (G : SimpleGraph α) [DecidableRel G.Adj] (hG : G.Connected) :
+    0 < secondSmallestDegree G := by
+  let ds := degreeSequence G
+  let D : Multiset ℕ := Finset.univ.val.map (fun v => G.degree v)
+  have hcoe : (↑ds : Multiset ℕ) = D := by
+    simp [ds, D, degreeSequence]
+  have hlen : ds.length = Fintype.card α := by
+    simp [ds, degreeSequence]
+  have hcard : 2 ≤ Fintype.card α := by
+    exact Nat.succ_le_iff.mpr Fintype.one_lt_card
+  have h1lt : 1 < ds.length := by omega
+  have hm : ds[1] ∈ ds := List.getElem_mem (by omega)
+  have hm' : ds[1] ∈ D := by
+    rw [← hcoe]
+    simpa using hm
+  obtain ⟨v, -, hv⟩ := Multiset.mem_map.mp hm'
+  have hpos : 0 < ds[1] := by
+    rw [← hv]
+    exact degree_pos_of_connected hG v
+  change 0 < ds.getD 1 0
+  rw [List.getD_eq_getElem ds 0 h1lt]
+  exact hpos
+
 /-- If a connected nontrivial graph has second-smallest degree one, then it has
 at least two distinct degree-one vertices. -/
 lemma exists_two_degree_one_of_secondSmallestDegree_eq_one [Nontrivial α]
