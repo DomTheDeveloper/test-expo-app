@@ -73,13 +73,13 @@ jobs:
             WOWII/ZZGraphConjecture314Cycle5.lean
             WOWII/ZZGraphConjecture314Cycle5Blowup.lean
             WOWII/ZZGraphConjecture314P5Bridge.lean
+            WOWII/ZZGraphConjecture314ConditionalFinal.lean
             WOWII/ZZGraphConjecture314GeodesicP5.lean
             WOWII/ZZGraphConjecture314BipartiteClassification.lean
             WOWII/ZZGraphConjecture314CycleDichotomy.lean
             WOWII/ZZGraphConjecture314C5Embedding.lean
             WOWII/ZZGraphConjecture314C5Dominates.lean
             WOWII/ZZGraphConjecture314C5Bags.lean
-            WOWII/ZZGraphConjecture314ConditionalFinal.lean
             WOWII/ZZGraphConjecture314C5BlowupClassification.lean
             WOWII/ZZGraphConjecture314Final.lean
           )
