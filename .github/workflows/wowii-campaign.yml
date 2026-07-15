@@ -6,6 +6,10 @@ on:
     paths:
       - 'WOWII/**'
       - '.github/workflows/wowii-campaign.yml'
+  pull_request:
+    paths:
+      - 'WOWII/**'
+      - '.github/workflows/wowii-campaign.yml'
   workflow_dispatch:
 
 jobs:
