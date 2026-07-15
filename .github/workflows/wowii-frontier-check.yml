@@ -17,7 +17,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: DomTheDeveloper/test-expo-app
-          ref: eecec3753c764f5330560037f119d319f2713d0c
+          ref: 5d2616f4144435ae64fca137d82d2120fbb5c47c
           path: campaign-source
 
       - name: Checkout pinned Formal Conjectures
@@ -66,9 +66,11 @@ jobs:
             WOWII/ZZGraphConjecture314Core.lean
             WOWII/ZZGraphConjecture314DominatingEdge.lean
             WOWII/ZZGraphConjecture314CardinalityReduction.lean
+            WOWII/ZZGraphConjecture314MinimalTDSStructure.lean
             WOWII/ZZGraphConjecture314BipartiteCommon.lean
             WOWII/ZZGraphConjecture314ChainGraph.lean
             WOWII/ZZGraphConjecture314P5Bridge.lean
+            WOWII/ZZGraphConjecture314FinalReduction.lean
           )
           for f in "${files[@]}"; do
             echo "=== Checking $f ===" | tee -a wowii-frontier.log
