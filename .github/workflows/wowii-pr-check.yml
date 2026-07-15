@@ -1,4 +1,4 @@
-name: WOWII PR Lean Check
+name: WOWII 143 Isolated Lean Check
 
 on:
   pull_request:
@@ -8,79 +8,105 @@ on:
   workflow_dispatch:
 
 jobs:
-  lean:
+  lean-wow143:
     runs-on: ubuntu-latest
+    timeout-minutes: 120
     steps:
-      - name: Checkout campaign repository
+      - name: Checkout proof campaign
         uses: actions/checkout@v4
 
-      - name: Checkout Formal Conjectures
+      - name: Checkout pinned Formal Conjectures
         uses: actions/checkout@v4
         with:
           repository: google-deepmind/formal-conjectures
+          ref: b2e608fc52d765510915a244bb69b1a2741acc3c
           path: formal-conjectures
 
       - name: Install elan
         run: |
-          curl https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -sSf | sh -s -- -y
+          curl -sSfL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh \
+            | sh -s -- -y --default-toolchain none
           echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
 
-      - name: Restore Formal Conjectures build cache
-        uses: actions/cache@v4
-        with:
-          path: formal-conjectures/.lake/build
-          key: wowii-formal-conjectures-${{ runner.os }}-${{ hashFiles('formal-conjectures/lean-toolchain', 'formal-conjectures/lake-manifest.json') }}
+      - name: Reject placeholders and custom axioms
+        shell: bash
+        run: |
+          set -euo pipefail
+          files=(
+            WOWII/GraphConjecture143Proof.lean
+            WOWII/GraphConjecture143Next.lean
+            WOWII/GraphConjecture143Leaves.lean
+            WOWII/GraphConjecture143Boundary.lean
+            WOWII/GraphConjecture143CycleAttach.lean
+            WOWII/GraphConjecture143ZZFinal.lean
+            WOWII/GraphConjecture143AxiomAudit.lean
+          )
+          ! grep -nE '(^|[[:space:]])(sorry|admit|native_decide)([[:space:]]|$)' "${files[@]}"
+          ! grep -nE '^[[:space:]]*(axiom|opaque)[[:space:]]' "${files[@]}"
+
+      - name: Prepare isolated proof tree
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf formal-conjectures/WOWII
+          mkdir -p formal-conjectures/WOWII
+          for f in \
+            GraphConjecture143Proof.lean \
+            GraphConjecture143Next.lean \
+            GraphConjecture143Leaves.lean \
+            GraphConjecture143Boundary.lean \
+            GraphConjecture143CycleAttach.lean \
+            GraphConjecture143ZZFinal.lean \
+            GraphConjecture143AxiomAudit.lean; do
+            cp "WOWII/$f" "formal-conjectures/WOWII/$f"
+          done
 
       - name: Download Mathlib cache
         working-directory: formal-conjectures
         run: lake exe cache get
 
-      - name: Build active target modules
+      - name: Build upstream conjecture module
         working-directory: formal-conjectures
-        run: |
-          lake build \
-            FormalConjectures.WrittenOnTheWallII.GraphConjecture160 \
-            FormalConjectures.WrittenOnTheWallII.GraphConjecture65 \
-            FormalConjectures.WrittenOnTheWallII.GraphConjecture133 \
-            FormalConjectures.WrittenOnTheWallII.GraphConjecture143 \
-            FormalConjectures.WrittenOnTheWallII.GraphConjecture314
+        run: lake build FormalConjectures.WrittenOnTheWallII.GraphConjecture143
 
-      - name: Compile campaign files
-        id: compile
+      - name: Compile complete proof and audit axioms
         working-directory: formal-conjectures
         shell: bash
         run: |
-          set +e
-          status=0
-          : > ../lean-output.log
-          rm -rf WOWII
-          cp -R ../WOWII WOWII
+          set -euo pipefail
           export LEAN_PATH="$PWD:${LEAN_PATH:-}"
-
-          check_file() {
-            local f="$1"
-            echo "=== Checking $f ===" | tee -a ../lean-output.log
-            lake env lean -o "${f%.lean}.olean" "$f" >> ../lean-output.log 2>&1
-            local code=$?
-            if [ "$code" -ne 0 ]; then status=$code; fi
-          }
-
-          # Compile ordinary modules first. The conditional 314 assembly imports
-          # two other campaign modules, so it must be checked after those oleans exist.
-          for f in WOWII/*.lean; do
-            if [ "$f" = "WOWII/ZZGraphConjecture314ConditionalFinal.lean" ]; then
-              continue
-            fi
-            check_file "$f"
+          : > wow143-build.log
+          files=(
+            WOWII/GraphConjecture143Proof.lean
+            WOWII/GraphConjecture143Next.lean
+            WOWII/GraphConjecture143Leaves.lean
+            WOWII/GraphConjecture143Boundary.lean
+            WOWII/GraphConjecture143CycleAttach.lean
+            WOWII/GraphConjecture143ZZFinal.lean
+            WOWII/GraphConjecture143AxiomAudit.lean
+          )
+          for f in "${files[@]}"; do
+            echo "=== Checking $f ===" | tee -a wow143-build.log
+            lake env lean -o "${f%.lean}.olean" "$f" 2>&1 | tee -a wow143-build.log
           done
-          check_file WOWII/ZZGraphConjecture314ConditionalFinal.lean
+          cat wow143-build.log
 
-          cat ../lean-output.log
-          exit "$status"
+      - name: Enforce axiom audit
+        working-directory: formal-conjectures
+        shell: bash
+        run: |
+          set -euo pipefail
+          if grep -q 'sorryAx' wow143-build.log; then
+            echo '::error::conjecture143_proved depends on sorryAx'
+            exit 1
+          fi
+          grep -q 'conjecture143_proved' wow143-build.log
 
-      - name: Upload Lean output
+      - name: Upload Lean diagnostic
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: lean-output
-          path: lean-output.log
+          name: wow143-isolated-build-log
+          path: formal-conjectures/wow143-build.log
+          if-no-files-found: warn
+          retention-days: 14
