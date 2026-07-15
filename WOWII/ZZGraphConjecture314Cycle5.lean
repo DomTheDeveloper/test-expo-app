@@ -1,5 +1,4 @@
 import FormalConjectures.WrittenOnTheWallII.GraphConjecture314
-import Mathlib.Combinatorics.SimpleGraph.CycleGraph
 
 /-!
 The finite C5 core of the nonbipartite family in WOWII Graph Conjecture 314.
