@@ -56,8 +56,8 @@ lemma exists_adj_cycleVertex_of_inducedC5
   have hne0 : G.dist x (c i) ≠ 0 := by
     intro h0
     have hxi : x = c i := (hG.dist_eq_zero_iff).mp h0
-    have hed := cycle_step_adj hc i
-    exact hnone (i + 1) (hxi ▸ hed)
+    have hed : G.Adj x (c (i + 1)) := by simpa [hxi] using cycle_step_adj hc i
+    exact hnone (i + 1) hed
   have hne1 : G.dist x (c i) ≠ 1 := by
     intro h1
     exact hnone i (dist_eq_one_iff_adj.mp h1)
@@ -81,12 +81,12 @@ lemma exists_adj_cycleVertex_of_inducedC5
     have hx_cycle : ∀ j : Fin 5, ¬G.Adj x (c j) := hnone
     have hx_cycle_ne : ∀ j : Fin 5, x ≠ c j := by
       intro j hxj
-      subst x
-      exact hnone (j + 1) (cycle_step_adj hc j)
+      have hadj : G.Adj x (c (j + 1)) := by simpa [hxj] using cycle_step_adj hc j
+      exact hnone (j + 1) hadj
     have ha_cycle_ne : ∀ j : Fin 5, a ≠ c j := by
       intro j haj
-      subst a
-      exact hnone j hxa
+      have hadj : G.Adj x (c j) := by simpa [haj] using hxa
+      exact hnone j hadj
     have hc_ne : ∀ {j k : Fin 5}, j ≠ k → c j ≠ c k := by
       intro j k hjk hck
       exact hjk (hc.1 hck)
@@ -139,8 +139,8 @@ lemma exists_adj_cycleVertex_of_inducedC5
       simpa [b, hend] using h
     have haNoCycle : ∀ j : Fin 5, ¬G.Adj a (c j) := by
       intro j haj
-      have w : G.Walk x (c j) := .cons hxa (.cons haj .nil)
-      have hdist2 : G.dist x (c j) ≤ 2 := by simpa using G.dist_le w
+      have hdist2 := G.dist_le (Walk.cons hxa (Walk.cons haj Walk.nil))
+      have hle2 : G.dist x (c j) ≤ 2 := by simpa using hdist2
       have hmin := hi j
       omega
     have hbnext : ¬G.Adj b (c (i + 1)) := by
@@ -153,20 +153,20 @@ lemma exists_adj_cycleVertex_of_inducedC5
     have hxnext : ¬G.Adj x (c (i + 1)) := hnone (i + 1)
     have hx_cycle_ne : ∀ j : Fin 5, x ≠ c j := by
       intro j hxj
-      subst x
-      exact hnone (j + 1) (cycle_step_adj hc j)
+      have hadj : G.Adj x (c (j + 1)) := by simpa [hxj] using cycle_step_adj hc j
+      exact hnone (j + 1) hadj
     have ha_cycle_ne : ∀ j : Fin 5, a ≠ c j := by
       intro j haj
-      subst a
-      exact hnone j hxa
+      have hadj : G.Adj x (c j) := by simpa [haj] using hxa
+      exact hnone j hadj
     have hxb_ne : x ≠ b := by
-      intro h
-      subst b
-      exact hnone i hbi
+      intro hxbEq
+      have hadj : G.Adj x (c i) := by simpa [hxbEq] using hbi
+      exact hnone i hadj
     have hbnext_ne : b ≠ c (i + 1) := by
-      intro h
-      subst b
-      exact haNoCycle (i + 1) hab
+      intro hbEq
+      have hadj : G.Adj a (c (i + 1)) := by simpa [hbEq] using hab
+      exact haNoCycle (i + 1) hadj
     have h_i_next : c i ≠ c (i + 1) := by
       intro h
       exact (by fin_cases i <;> decide : i ≠ i + 1) (hc.1 h)
