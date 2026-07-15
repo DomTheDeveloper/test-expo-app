@@ -19,7 +19,7 @@ def counterexample160 : SimpleGraph (Fin 5) :=
 
 instance counterexample160DecidableAdj : DecidableRel counterexample160.Adj := by
   intro u v
-  change Decidable (s(u, v) ∈ counterexample160Edges)
+  change Decidable (s(u, v) ∈ counterexample160Edges ∧ u ≠ v)
   infer_instance
 
 lemma counterexample160_connected : counterexample160.Connected := by
