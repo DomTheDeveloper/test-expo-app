@@ -78,5 +78,5 @@ theorem counterexample160_refutes_statement :
     counterexample160_max_triangles, counterexample160_induced_C4_count]
   linarith [counterexample160_Ls_le_five]
 
--- CI iteration marker.
+-- CI iteration marker 2.
 end WrittenOnTheWallII.GraphConjecture160
