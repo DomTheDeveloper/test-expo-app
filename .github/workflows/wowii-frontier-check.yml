@@ -17,7 +17,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: DomTheDeveloper/test-expo-app
-          ref: 5d2616f4144435ae64fca137d82d2120fbb5c47c
+          ref: 9516d3622a6ff4da1b4c9d993f407bdeb9b819d4
           path: campaign-source
 
       - name: Checkout pinned Formal Conjectures
@@ -67,6 +67,7 @@ jobs:
             WOWII/ZZGraphConjecture314DominatingEdge.lean
             WOWII/ZZGraphConjecture314CardinalityReduction.lean
             WOWII/ZZGraphConjecture314MinimalTDSStructure.lean
+            WOWII/ZZGraphConjecture314NoC4.lean
             WOWII/ZZGraphConjecture314BipartiteCommon.lean
             WOWII/ZZGraphConjecture314ChainGraph.lean
             WOWII/ZZGraphConjecture314P5Bridge.lean
