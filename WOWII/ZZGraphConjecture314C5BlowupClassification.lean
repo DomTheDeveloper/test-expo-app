@@ -98,9 +98,7 @@ lemma hasWOWII314StructuralClassification_of_inducedC5Embedding
       have hca_y : c a ≠ y := by
         intro h
         subst y
-        have hEq : bag (c a) = bag x := by
-          simpa [hcycleBag a] using hja.symm
-        exact hnxy (hEq ▸ hax.symm)
+        exact hja (hcycleBag a)
       have hx_cd : x ≠ c d := by
         intro h
         subst x
@@ -108,7 +106,7 @@ lemma hasWOWII314StructuralClassification_of_inducedC5Embedding
       have hx_y : x ≠ y := by
         intro h
         subst y
-        exact hij (by simpa using rfl)
+        exact (cycleGraph 5).loopless (bag x) hij
       have hcb_y : c b ≠ y := by
         intro h
         subst y
