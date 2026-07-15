@@ -23,7 +23,7 @@ lemma short_path_support_induces_tree {G : SimpleGraph α} {u v : α}
     apply p.toSubgraph_connected.coe.map f
     intro x
     refine ⟨⟨x.1, ?_⟩, Subtype.ext rfl⟩
-    simp [S, Walk.mem_verts_toSubgraph, x.2]
+    simp [S, x.2]
   refine ⟨hconn, ?_⟩
   intro z c hc
   let incl : G.induce S →g G := ⟨Subtype.val, fun h => h⟩
@@ -34,8 +34,10 @@ lemma short_path_support_induces_tree {G : SimpleGraph α} {u v : α}
     simpa [S, Walk.length_support] using hc.support_nodup.length_le_card
   have hScard : Fintype.card S = p.length + 1 := by
     rw [← Set.toFinset_card]
-    change p.support.toFinset.card = p.length + 1
-    rw [List.toFinset_card_of_nodup hp.support_nodup, p.length_support]
+    have hfin : S.toFinset = p.support.toFinset := by
+      ext x
+      simp [S]
+    rw [hfin, List.toFinset_card_of_nodup hp.support_nodup, p.length_support]
   omega
 
 end WrittenOnTheWallII.GraphConjecture143
