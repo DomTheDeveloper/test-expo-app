@@ -1,0 +1,38 @@
+name: WOWII PR Lean Check
+
+on:
+  pull_request:
+    paths:
+      - 'WOWII/**'
+      - '.github/workflows/wowii-*.yml'
+  workflow_dispatch:
+
+jobs:
+  lean:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout campaign repository
+        uses: actions/checkout@v4
+
+      - name: Checkout Formal Conjectures
+        uses: actions/checkout@v4
+        with:
+          repository: google-deepmind/formal-conjectures
+          path: formal-conjectures
+
+      - name: Install elan
+        run: |
+          curl https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -sSf | sh -s -- -y
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+
+      - name: Download Mathlib cache
+        working-directory: formal-conjectures
+        run: lake exe cache get
+
+      - name: Compile campaign files
+        working-directory: formal-conjectures
+        run: |
+          for f in ../WOWII/*.lean; do
+            echo "=== Checking $f ==="
+            lake env lean "$f"
+          done
