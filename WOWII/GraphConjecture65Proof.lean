@@ -79,7 +79,7 @@ lemma two_le_largestInducedForestSize (G : SimpleGraph α) [DecidableRel G.Adj]
       rintro n ⟨s, _, rfl⟩
       exact s.card_le_univ⟩
   · refine ⟨{u, w}, ?_, by simp [huw.ne]⟩
-    rw [induce_eq_coe_induce_top]
+    change (((⊤ : G.Subgraph).induce (↑({u, w} : Finset α) : Set α)).coe).IsAcyclic
     rw [← Subgraph.subgraphOfAdj_eq_induce huw]
     exact (IsTree.coe_subgraphOfAdj huw).IsAcyclic
 
