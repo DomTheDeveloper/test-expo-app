@@ -13,8 +13,6 @@ variable {α : Type*} [Fintype α] [DecidableEq α]
 lemma exists_crossing_edge {G : SimpleGraph α} (hG : G.Connected)
     {S : Set α} (hS : S.Nonempty) (hS_ne : S ≠ Set.univ) :
     ∃ u ∈ S, ∃ v ∉ S, G.Adj u v := by
-  by_contra hcross
-  push_neg at hcross
   obtain ⟨u, hu⟩ := hS
   have hex : ∃ v : α, v ∉ S := by
     by_contra h
@@ -23,21 +21,19 @@ lemma exists_crossing_edge {G : SimpleGraph α} (hG : G.Connected)
     ext x
     simp [h x]
   obtain ⟨v, hv⟩ := hex
-  let H : G.Subgraph where
-    verts := S
-    Adj x y := G.Adj x y ∧ x ∈ S ∧ y ∈ S
-    adj_sub h := h.1
-    edge_vert h := h.2.1
-    symm.symm := by
-      rintro x y ⟨hxy, hx, hy⟩
-      exact ⟨hxy.symm, hy, hx⟩
-  have hvS : v ∈ H.verts := (hG u v).mem_subgraphVerts (H := H) (by
-    intro x hx y hxy
-    have hy : y ∈ S := by
-      by_contra hy
-      exact hcross x hx y hy hxy
-    exact ⟨hxy, hx, hy⟩) hu
-  exact hv hvS
+  have aux : ∀ {a b : α} (p : G.Walk a b), a ∈ S → b ∉ S →
+      ∃ x ∈ S, ∃ y ∉ S, G.Adj x y := by
+    intro a b p
+    induction p with
+    | nil =>
+        intro ha hb
+        exact (hb ha).elim
+    | @cons a c b hac p ih =>
+        intro ha hb
+        by_cases hc : c ∈ S
+        · exact ih hc hb
+        · exact ⟨a, ha, c, hc, hac⟩
+  exact (hG u v).elim fun p => aux p hu hv
 
 lemma distMin_le_one {G : SimpleGraph α} [DecidableRel G.Adj]
     (hG : G.Connected) {S : Set α} (hS : S.Nonempty) :
@@ -58,7 +54,8 @@ lemma distMin_le_one {G : SimpleGraph α} [DecidableRel G.Adj]
       apply Finset.min'_le
       exact Finset.mem_image.mpr ⟨v, hvout, rfl⟩
     have hSfin : S.toFinset.Nonempty := by
-      simpa [Finset.Nonempty] using hS
+      obtain ⟨x, hx⟩ := hS
+      exact ⟨x, by simpa using hx⟩
     have hdist : distToSet G v S ≤ G.dist v u := by
       unfold distToSet
       rw [dif_pos hSfin]
@@ -71,7 +68,11 @@ lemma two_le_largestInducedForestSize (G : SimpleGraph α) [DecidableRel G.Adj]
     (hG : G.Connected) [Nontrivial α] :
     2 ≤ G.largestInducedForestSize := by
   obtain ⟨u, v, huv⟩ := exists_pair_ne α
-  obtain ⟨w, huw⟩ := Reachable.nonempty_neighborSet_left huv (hG u v)
+  obtain ⟨w, huw⟩ : ∃ w, G.Adj u w := by
+    obtain ⟨p⟩ := hG u v
+    cases p with
+    | nil => exact (huv rfl).elim
+    | cons h p => exact ⟨_, h⟩
   unfold largestInducedForestSize
   apply le_csSup
   · exact ⟨Fintype.card α, by
