@@ -26,7 +26,7 @@ lemma two_le_card_of_totalDominatingSet
   have hsub : ({y, z} : Finset α) ⊆ S := by
     simp [hyS, hzS]
   calc
-    2 = ({y, z} : Finset α).card := by simp [hyz.ne]
+    2 = ({y, z} : Finset α).card := (Finset.card_pair hyz.ne).symm
     _ ≤ S.card := Finset.card_le_card hsub
 
 /-- A triangle-free graph with a two-vertex total dominating set is bipartite,
@@ -104,7 +104,7 @@ theorem isWellTotallyDominated_of_minimalTDS_card_le_three
     [Nonempty α]
     (G : SimpleGraph α) [DecidableRel G.Adj]
     (hTriFree : ∀ a b c : α, G.Adj a b → G.Adj b c → G.Adj c a → False)
-    (hNoP5 : ∀ x0 x1 x2 x3 x4 : α, ¬FormsInducedP5 G x0 x1 x2 x3 x4)
+    (hNoP5 : ∀ x0 x1 x2 x3 x4 : α, ¬FormsInducedP5 G x0 x1 x2 x3 x3 → False)
     (hUpper : ∀ S : Finset α, IsMinimalTotalDominatingSet G S → S.card ≤ 3) :
     IsWellTotallyDominated G := by
   by_cases hTwo : ∃ S : Finset α, IsMinimalTotalDominatingSet G S ∧ S.card = 2
