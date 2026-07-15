@@ -53,8 +53,9 @@ jobs:
           set +e
           status=0
           : > ../lean-output.log
-          export LEAN_PATH="..:${LEAN_PATH:-}"
-          for f in ../WOWII/*.lean; do
+          rm -rf WOWII
+          cp -R ../WOWII WOWII
+          for f in WOWII/*.lean; do
             echo "=== Checking $f ===" | tee -a ../lean-output.log
             lake env lean -o "${f%.lean}.olean" "$f" >> ../lean-output.log 2>&1
             code=$?
