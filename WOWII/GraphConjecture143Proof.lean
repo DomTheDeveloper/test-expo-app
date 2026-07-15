@@ -61,6 +61,44 @@ lemma path_toSubgraph_isTree {G : SimpleGraph α} {u v : α} {p : G.Walk u v}
     map_rel_iff' := Iff.rfl
   exact IsAcyclic.embedding f (path_toSubgraph_spanningCoe_isAcyclic hp)
 
+lemma edge_getVert_succ_mem_edges {G : SimpleGraph α} {u v : α} (p : G.Walk u v)
+    {i : ℕ} (hi : i < p.length) : s(p.getVert i, p.getVert (i + 1)) ∈ p.edges := by
+  have hd : p.darts[i] ∈ p.darts := List.getElem_mem _
+  have hm : (p.darts[i]).edge ∈ p.edges := by
+    exact List.mem_map_of_mem _ hd
+  rw [p.darts_getElem_eq_getVert i (by simpa [p.length_darts] using hi)] at hm
+  exact hm
+
+lemma geodesic_adj_mem_edges {G : SimpleGraph α} {u v : α} {p : G.Walk u v}
+    (hgeo : p.length = G.dist u v) {i j : ℕ}
+    (hi : i ≤ p.length) (hj : j ≤ p.length)
+    (hadj : G.Adj (p.getVert i) (p.getVert j)) :
+    s(p.getVert i, p.getVert j) ∈ p.edges := by
+  have hne : i ≠ j := by
+    intro hij
+    subst j
+    exact hadj.ne rfl
+  have forward : ∀ {a b : ℕ}, a < b → b ≤ p.length →
+      G.Adj (p.getVert a) (p.getVert b) →
+      s(p.getVert a, p.getVert b) ∈ p.edges := by
+    intro a b hab hb habadj
+    let q := (p.drop a).take (b - a)
+    have hqsub : q.IsSubwalk p :=
+      (Walk.isSubwalk_take (p.drop a) (b - a)).trans (Walk.isSubwalk_drop p a)
+    have hseg := length_eq_dist_of_subwalk hgeo hqsub
+    have hseg' : b - a = G.dist (p.getVert a) (p.getVert b) := by
+      simpa [q, Nat.min_eq_left (by omega), Nat.add_sub_of_le hab.le] using hseg
+    have hdiff : b - a = 1 := by
+      rw [dist_eq_one_iff_adj.mpr habadj] at hseg'
+      exact hseg'
+    have hba : b = a + 1 := by omega
+    subst b
+    exact edge_getVert_succ_mem_edges p (by omega)
+  by_cases hij : i < j
+  · exact forward hij hj hadj
+  · have hji : j < i := by omega
+    simpa [Sym2.eq_swap] using forward hji hi hadj.symm
+
 lemma two_le_largestInducedTreeSize (G : SimpleGraph α) [DecidableRel G.Adj]
     (hG : G.Connected) [Nontrivial α] :
     2 ≤ largestInducedTreeSize G := by
