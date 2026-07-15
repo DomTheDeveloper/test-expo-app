@@ -10,6 +10,15 @@ open Classical SimpleGraph
 
 variable {α : Type*} [Fintype α] [DecidableEq α]
 
+private lemma bool_eq_of_ne_same {a b s : Bool} (ha : a ≠ s) (hb : b ≠ s) : a = b := by
+  cases a <;> cases b <;> cases s <;> simp_all
+
+private lemma bool_eq_false_of_true_ne {a : Bool} (h : true ≠ a) : a = false := by
+  cases a <;> simp_all
+
+private lemma bool_eq_true_of_false_ne {a : Bool} (h : false ≠ a) : a = true := by
+  cases a <;> simp_all
+
 /-- Five ordered vertices form an induced path on five vertices. -/
 def FormsInducedP5 (G : SimpleGraph α) (x0 x1 x2 x3 x4 : α) : Prop :=
   x0 ≠ x1 ∧ x0 ≠ x2 ∧ x0 ≠ x3 ∧ x0 ≠ x4 ∧
@@ -46,12 +55,9 @@ lemma minimalTDS_card_eq_two_of_bipartite_dominating_edge
     have hb₂side_ne : side b₂ ≠ s := by
       intro h
       exact hpart b₂ a₂ hb₂a₂ (h.trans ha₂side.symm)
-    have hbside : side b₁ = side b₂ := by
-      cases hs : s <;> cases h1 : side b₁ <;> cases h2 : side b₂ <;> simp_all
-    have hb₁cSide : side b₁ = side c := by
-      cases hs : s <;> cases h1 : side b₁ <;> cases hc : side c <;> simp_all
-    have hb₂cSide : side b₂ = side c := by
-      cases hs : s <;> cases h2 : side b₂ <;> cases hc : side c <;> simp_all
+    have hbside : side b₁ = side b₂ := bool_eq_of_ne_same hb₁side_ne hb₂side_ne
+    have hb₁cSide : side b₁ = side c := bool_eq_of_ne_same hb₁side_ne hcSide
+    have hb₂cSide : side b₂ = side c := bool_eq_of_ne_same hb₂side_ne hcSide
     have hb12 : b₁ ≠ b₂ := by
       intro h
       subst b₂
@@ -79,24 +85,19 @@ lemma minimalTDS_card_eq_two_of_bipartite_dominating_edge
       exact hb₂side_ne ha₁side
     have hcA₁ : G.Adj c a₁ := hcDom a₁ ha₁side
     have hcA₂ : G.Adj c a₂ := hcDom a₂ ha₂side
-    have hn_b₁_c : ¬G.Adj b₁ c := by
-      intro h
-      exact hpart b₁ c h hb₁cSide
-    have hn_b₂_c : ¬G.Adj b₂ c := by
-      intro h
-      exact hpart b₂ c h hb₂cSide
-    have hn_b₁_b₂ : ¬G.Adj b₁ b₂ := by
-      intro h
-      exact hpart b₁ b₂ h hbside
-    have hn_a₁_a₂ : ¬G.Adj a₁ a₂ := by
-      intro h
-      exact hpart a₁ a₂ h (ha₁side.trans ha₂side.symm)
+    have hn_b₁_c : ¬G.Adj b₁ c := fun h => hpart b₁ c h hb₁cSide
+    have hn_b₂_c : ¬G.Adj b₂ c := fun h => hpart b₂ c h hb₂cSide
+    have hn_b₁_b₂ : ¬G.Adj b₁ b₂ := fun h => hpart b₁ b₂ h hbside
+    have hn_a₁_a₂ : ¬G.Adj a₁ a₂ :=
+      fun h => hpart a₁ a₂ h (ha₁side.trans ha₂side.symm)
     have hn_b₁_a₂ : ¬G.Adj b₁ a₂ := by
       intro h
       exact ha12 (hb₁priv a₂ ha₂S h).symm
     have hn_b₂_a₁ : ¬G.Adj b₂ a₁ := by
       intro h
       exact ha12 (hb₂priv a₁ ha₁S h)
+    have hn_a₁_b₂ : ¬G.Adj a₁ b₂ := fun h => hn_b₂_a₁ h.symm
+    have hn_c_b₂ : ¬G.Adj c b₂ := fun h => hn_b₂_c h.symm
     apply hNoP5 b₁ a₁ c a₂ b₂
     unfold FormsInducedP5
     exact ⟨hb₁a₁.ne, hb₁c, hb₁a₂, hb12,
@@ -104,21 +105,20 @@ lemma minimalTDS_card_eq_two_of_bipartite_dominating_edge
       hcA₂.ne, hb₂c.symm, hb₂a₂.ne.symm,
       hb₁a₁, hcA₁.symm, hcA₂, hb₂a₂.symm,
       hn_b₁_c, hn_b₁_a₂, hn_b₁_b₂,
-      hn_a₁_a₂, hn_b₂_a₁.symm, hn_b₂_c.symm⟩
+      hn_a₁_a₂, hn_a₁_b₂, hn_c_b₂⟩
   obtain ⟨a, haS, hva⟩ := hS.1 v
   have haSide : side a = false := by
-    have hne := hpart v a hva
-    rw [hv] at hne
-    cases h : side a <;> simp_all
+    apply bool_eq_false_of_true_ne
+    simpa [hv] using hpart v a hva
   obtain ⟨b, hbS, hub⟩ := hS.1 u
   have hbSide : side b = true := by
-    have hne := hpart u b hub
-    rw [hu] at hne
-    cases h : side b <;> simp_all
+    apply bool_eq_true_of_false_ne
+    simpa [hu] using hpart u b hub
   have hab : a ≠ b := by
     intro h
     subst b
-    simp_all
+    rw [haSide] at hbSide
+    contradiction
   have hforall : ∀ w ∈ S, w = a ∨ w = b := by
     intro w hwS
     cases hsw : side w with
