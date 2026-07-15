@@ -1,5 +1,9 @@
 import FormalConjectures.WrittenOnTheWallII.GraphConjecture143
 
+/-!
+A short-path lemma for the proof of WOWII Graph Conjecture 143.
+-/
+
 namespace WrittenOnTheWallII.GraphConjecture143
 
 open Classical SimpleGraph
@@ -15,11 +19,11 @@ lemma short_path_support_induces_tree {G : SimpleGraph α} {u v : α}
   have hconn : (G.induce S).Connected := by
     let f : p.toSubgraph.coe →g G.induce S :=
       ⟨fun x => ⟨x.1, by simpa [S, Walk.mem_verts_toSubgraph] using x.2⟩,
-        fun h => h⟩
+        fun h => by simpa using p.toSubgraph.adj_sub h⟩
     apply p.toSubgraph_connected.coe.map f
     intro x
     refine ⟨⟨x.1, ?_⟩, Subtype.ext rfl⟩
-    simpa [S, Walk.mem_verts_toSubgraph] using x.2
+    simp [S, Walk.mem_verts_toSubgraph, x.2]
   refine ⟨hconn, ?_⟩
   intro z c hc
   let incl : G.induce S →g G := ⟨Subtype.val, fun h => h⟩
@@ -27,12 +31,11 @@ lemma short_path_support_induces_tree {G : SimpleGraph α} {u v : α}
   have hg : G.girth ≤ c.length := by
     simpa using G.girth_le_length hcG
   have hcard : c.length ≤ Fintype.card S := by
-    simpa [Walk.length_support] using hc.support_nodup.length_le_card
+    simpa [S, Walk.length_support] using hc.support_nodup.length_le_card
   have hScard : Fintype.card S = p.length + 1 := by
-    rw [Fintype.card_ofFinset p.support.toFinset]
-    · rw [List.toFinset_card_of_nodup hp.support_nodup, p.length_support]
-    · intro x
-      simp [S]
+    rw [← Set.toFinset_card]
+    change p.support.toFinset.card = p.length + 1
+    rw [List.toFinset_card_of_nodup hp.support_nodup, p.length_support]
   omega
 
 end WrittenOnTheWallII.GraphConjecture143
