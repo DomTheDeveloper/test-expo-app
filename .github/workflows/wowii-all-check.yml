@@ -19,7 +19,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: DomTheDeveloper/test-expo-app
-          ref: bfcfa47bb1c6385f4e21477d0c462a3649da64cb
+          ref: 546294b3ae5309144aad02ac2aa81fefd61a0066
           path: campaign-source
 
       - name: Checkout pinned Formal Conjectures
