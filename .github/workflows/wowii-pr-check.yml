@@ -55,6 +55,7 @@ jobs:
           : > ../lean-output.log
           rm -rf WOWII
           cp -R ../WOWII WOWII
+          export LEAN_PATH="$PWD:${LEAN_PATH:-}"
           for f in WOWII/*.lean; do
             echo "=== Checking $f ===" | tee -a ../lean-output.log
             lake env lean -o "${f%.lean}.olean" "$f" >> ../lean-output.log 2>&1
