@@ -48,10 +48,10 @@ lemma neighborhood_induced_degree_le_one_of_noC4
   apply Finset.card_le_one.mpr
   intro y hy z hz
   apply Subtype.ext
-  have hxyInd : (G.induce (G.neighborSet v)).Adj x y :=
-    (mem_neighborFinset _ _ _).mp hy
-  have hxzInd : (G.induce (G.neighborSet v)).Adj x z :=
-    (mem_neighborFinset _ _ _).mp hz
+  have hxyInd : (G.induce (G.neighborSet v)).Adj x y := by
+    simpa only [mem_neighborFinset] using hy
+  have hxzInd : (G.induce (G.neighborSet v)).Adj x z := by
+    simpa only [mem_neighborFinset] using hz
   exact neighbors_inside_neighborhood_unique_of_noC4 G hNoC4
     x.property y.property z.property hxyInd hxzInd
 
