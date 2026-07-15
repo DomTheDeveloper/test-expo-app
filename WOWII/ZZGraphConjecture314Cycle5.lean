@@ -13,7 +13,7 @@ lemma cycleGraph_five_minimalTDS_card_eq_three
     (S : Finset (Fin 5))
     (hS : IsMinimalTotalDominatingSet (cycleGraph 5) S) :
     S.card = 3 := by
-  native_decide
+  native_decide +revert
 
 /-- In particular, the 5-cycle is well totally dominated. -/
 lemma cycleGraph_five_isWellTotallyDominated :
