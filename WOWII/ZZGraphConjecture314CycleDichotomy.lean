@@ -69,11 +69,10 @@ lemma exists_bipartite_side_of_no_inducedC5
     dist_eq_of_adj_same_distance_parity G r x y hxy hpar
   have hle : G.dist r x ≤ 3 := dist_le_three_of_no_FormsInducedP5 G hG hNoP5 r x
   interval_cases hd : G.dist r x
-  · have hx : x = r := (hG.dist_eq_zero_iff).mp hd
+  · have hx : r = x := (hG.dist_eq_zero_iff).mp hd
     have hy0 : G.dist r y = 0 := by omega
-    have hy : y = r := (hG.dist_eq_zero_iff).mp hy0
-    subst x
-    subst y
+    have hy : r = y := (hG.dist_eq_zero_iff).mp hy0
+    rw [← hx, ← hy] at hxy
     exact G.loopless r hxy
   · have hrx : G.Adj r x := dist_eq_one_iff_adj.mp hd
     have hrydist : G.dist r y = 1 := by omega
@@ -99,8 +98,8 @@ lemma exists_bipartite_side_of_no_inducedC5
       have hend : q.getVert 2 = y := by simpa [hqlen] using q.getVert_length
       simpa [b, hend] using h
     by_cases hab : a = b
-    · subst b
-      exact hTriFree a x y hax hxy hby.symm
+    · have hby' : G.Adj a y := by simpa [hab] using hby
+      exact hTriFree a x y hax hxy hby'.symm
     · have hrx : ¬G.Adj r x := by
         intro h
         have := dist_eq_one_iff_adj.mpr h
@@ -120,24 +119,26 @@ lemma exists_bipartite_side_of_no_inducedC5
         exact hTriFree x y b hxy hby.symm h.symm
       have hr_ne_a : r ≠ a := hra.ne
       have hr_ne_x : r ≠ x := by
-        intro h
-        subst x
-        simp at hd
+        intro hrxEq
+        have hzero : G.dist r x = 0 := by simp [hrxEq]
+        omega
       have hr_ne_y : r ≠ y := by
-        intro h
-        subst y
-        simp at hdy
+        intro hryEq
+        have hzero : G.dist r y = 0 := by simp [hryEq]
+        omega
       have hr_ne_b : r ≠ b := hrb.ne
       have ha_ne_x : a ≠ x := hax.ne
       have ha_ne_y : a ≠ y := by
-        intro h
-        subst y
-        exact hry (by simpa using hra)
+        intro hayEq
+        have hdist1a : G.dist r a = 1 := dist_eq_one_iff_adj.mpr hra
+        have hdist1y : G.dist r y = 1 := by simpa [← hayEq] using hdist1a
+        omega
       have hx_ne_y : x ≠ y := hxy.ne
       have hx_ne_b : x ≠ b := by
-        intro h
-        subst x
-        exact hrx (by simpa using hrb)
+        intro hxbEq
+        have hdist1b : G.dist r b = 1 := dist_eq_one_iff_adj.mpr hrb
+        have hdist1x : G.dist r x = 1 := by simpa [hxbEq] using hdist1b
+        omega
       have hy_ne_b : y ≠ b := hby.ne.symm
       apply hNoC5 r a x y b
       unfold FormsInducedC5
@@ -149,6 +150,7 @@ lemma exists_bipartite_side_of_no_inducedC5
   · have hdy : G.dist r y = 3 := by omega
     obtain ⟨p, hp, hpgeo⟩ := hG.exists_path_of_dist r x
     have hplen : p.length = 3 := hpgeo.trans hd
+    have hend : p.getVert 3 = x := by simpa [hplen] using p.getVert_length
     let a := p.getVert 1
     let b := p.getVert 2
     have hra : G.Adj r a := by
@@ -157,7 +159,6 @@ lemma exists_bipartite_side_of_no_inducedC5
       simpa [a, b] using p.adj_getVert_succ (i := 1) (by omega)
     have hbx : G.Adj b x := by
       have h := p.adj_getVert_succ (i := 2) (by omega)
-      have hend : p.getVert 3 = x := by simpa [hplen] using p.getVert_length
       simpa [b, hend] using h
     have hrb : ¬G.Adj r b := by
       intro h
@@ -175,8 +176,8 @@ lemma exists_bipartite_side_of_no_inducedC5
       omega
     have hay : ¬G.Adj a y := by
       intro h
-      have hw : G.Walk r y := .cons hra (.cons h .nil)
-      have hle2 : G.dist r y ≤ 2 := by simpa using G.dist_le hw
+      have hle2 := G.dist_le (Walk.cons hra (Walk.cons h Walk.nil))
+      have : G.dist r y ≤ 2 := by simpa using hle2
       omega
     have hby : ¬G.Adj b y := by
       intro h
@@ -185,34 +186,37 @@ lemma exists_bipartite_side_of_no_inducedC5
     have hr_ne_b : r ≠ b := by
       intro hrbEq
       have hget : p.getVert 0 = p.getVert 2 := by
-        simpa [b] using hrbEq
+        calc
+          p.getVert 0 = r := by simp
+          _ = b := hrbEq
+          _ = p.getVert 2 := by rfl
       have hidx := hp.getVert_injOn (by omega) (by omega) hget
       omega
     have hr_ne_x : r ≠ x := by
-      intro h
-      subst x
-      simp at hd
+      intro hrxEq
+      have hzero : G.dist r x = 0 := by simp [hrxEq]
+      omega
     have hr_ne_y : r ≠ y := by
-      intro h
-      subst y
-      simp at hdy
+      intro hryEq
+      have hzero : G.dist r y = 0 := by simp [hryEq]
+      omega
     have ha_ne_b : a ≠ b := hab.ne
     have ha_ne_x : a ≠ x := by
-      intro h
-      subst x
-      have hdist1 : G.dist r a = 1 := dist_eq_one_iff_adj.mpr hra
+      intro haxEq
+      have hget : p.getVert 1 = p.getVert 3 := by simpa [a, hend] using haxEq
+      have hidx := hp.getVert_injOn (by omega) (by omega) hget
       omega
     have ha_ne_y : a ≠ y := by
-      intro h
-      subst y
-      have hdist1 : G.dist r a = 1 := dist_eq_one_iff_adj.mpr hra
+      intro hayEq
+      have hdist1a : G.dist r a = 1 := dist_eq_one_iff_adj.mpr hra
+      have hdist1y : G.dist r y = 1 := by simpa [← hayEq] using hdist1a
       omega
     have hb_ne_x : b ≠ x := hbx.ne
     have hb_ne_y : b ≠ y := by
-      intro h
-      subst y
-      have w : G.Walk r b := .cons hra (.cons hab .nil)
-      have hdist2 : G.dist r b ≤ 2 := by simpa using G.dist_le w
+      intro hbyEq
+      have hle2 := G.dist_le (Walk.cons hra (Walk.cons hab Walk.nil))
+      have hdist2b : G.dist r b ≤ 2 := by simpa using hle2
+      have hdist2y : G.dist r y ≤ 2 := by simpa [← hbyEq] using hdist2b
       omega
     have hx_ne_y : x ≠ y := hxy.ne
     apply hNoP5 r a b x y
