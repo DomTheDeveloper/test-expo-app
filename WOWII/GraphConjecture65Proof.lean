@@ -84,9 +84,11 @@ lemma two_le_largestInducedForestSize (G : SimpleGraph α) [DecidableRel G.Adj]
       simp
     rw [hset]
     intro z p hp
-    have hnon : ¬p.Nil := nil_iff_eq_nil.not.mpr hp.ne_nil
+    have hnon : ¬p.Nil := hp.not_nil
     have hs := p.adj_snd hnon
     have ht := p.adj_penultimate hnon
+    have hsz : z ≠ p.snd := hs.ne
+    have htz : p.penultimate ≠ z := ht.ne
     apply hp.snd_ne_penultimate
     apply Subtype.ext
     have hz := z.property
