@@ -8,6 +8,16 @@ namespace WrittenOnTheWallII.GraphConjecture314
 
 open Classical SimpleGraph
 
+private instance totalDominationDecidable (T : Finset (Fin 5)) :
+    Decidable (IsTotalDominatingSet (cycleGraph 5) T) := by
+  unfold IsTotalDominatingSet
+  infer_instance
+
+private instance minimalTotalDominationDecidable (T : Finset (Fin 5)) :
+    Decidable (IsMinimalTotalDominatingSet (cycleGraph 5) T) := by
+  unfold IsMinimalTotalDominatingSet
+  infer_instance
+
 /-- Every minimal total dominating set of the 5-cycle has three vertices. -/
 lemma cycleGraph_five_minimalTDS_card_eq_three
     (S : Finset (Fin 5))
