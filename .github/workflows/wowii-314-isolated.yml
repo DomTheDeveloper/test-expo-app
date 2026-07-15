@@ -39,6 +39,12 @@ jobs:
         working-directory: formal-conjectures
         run: lake exe cache get
 
+      - name: Restore pinned Formal Conjectures build cache
+        uses: actions/cache@v4
+        with:
+          path: formal-conjectures/.lake/build
+          key: fc-build-${{ runner.os }}-b2e608fc52d765510915a244bb69b1a2741acc3c-v1
+
       - name: Build upstream target modules
         working-directory: formal-conjectures
         run: |
