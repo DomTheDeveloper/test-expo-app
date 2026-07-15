@@ -41,7 +41,9 @@ jobs:
           lake build \
             FormalConjectures.WrittenOnTheWallII.GraphConjecture160 \
             FormalConjectures.WrittenOnTheWallII.GraphConjecture65 \
-            FormalConjectures.WrittenOnTheWallII.GraphConjecture143
+            FormalConjectures.WrittenOnTheWallII.GraphConjecture133 \
+            FormalConjectures.WrittenOnTheWallII.GraphConjecture143 \
+            FormalConjectures.WrittenOnTheWallII.GraphConjecture314
 
       - name: Compile campaign files
         id: compile
