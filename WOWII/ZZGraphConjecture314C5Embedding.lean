@@ -25,6 +25,16 @@ lemma exists_inducedC5Embedding_of_FormsInducedC5
     ∃ c : Fin 5 → α, IsInducedC5Embedding G c := by
   rcases hC with ⟨h01, h02, h03, h04, h12, h13, h14, h23, h24, h34,
     ha01, ha12, ha23, ha34, ha40, hn02, hn03, hn13, hn14, hn24⟩
+  have ha10 : G.Adj x1 x0 := ha01.symm
+  have ha21 : G.Adj x2 x1 := ha12.symm
+  have ha32 : G.Adj x3 x2 := ha23.symm
+  have ha43 : G.Adj x4 x3 := ha34.symm
+  have ha04 : G.Adj x0 x4 := ha40.symm
+  have hn20 : ¬G.Adj x2 x0 := fun h => hn02 h.symm
+  have hn30 : ¬G.Adj x3 x0 := fun h => hn03 h.symm
+  have hn31 : ¬G.Adj x3 x1 := fun h => hn13 h.symm
+  have hn41 : ¬G.Adj x4 x1 := fun h => hn14 h.symm
+  have hn42 : ¬G.Adj x4 x2 := fun h => hn24 h.symm
   let c : Fin 5 → α := ![x0, x1, x2, x3, x4]
   refine ⟨c, ?_, ?_⟩
   · intro i j hij
