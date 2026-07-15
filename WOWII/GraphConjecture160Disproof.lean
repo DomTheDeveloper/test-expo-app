@@ -2,6 +2,7 @@ import FormalConjectures.WrittenOnTheWallII.GraphConjecture160
 
 /-!
 A five-vertex counterexample to Written on the Wall II Graph Conjecture 160.
+All finite checks use kernel-reduced `decide`; no native-code evaluator is trusted.
 -/
 
 namespace WrittenOnTheWallII.GraphConjecture160
@@ -22,25 +23,29 @@ instance counterexample160DecidableAdj : DecidableRel counterexample160.Adj := b
   change Decidable (s(u, v) ∈ counterexample160Edges ∧ u ≠ v)
   infer_instance
 
+/-- Kernel-checked finite verification that the counterexample graph is connected. -/
 lemma counterexample160_connected : counterexample160.Connected := by
-  decide +native
+  decide
 
+/-- Kernel-checked finite verification of the maximum local independence number. -/
 lemma counterexample160_max_local_independence :
     (Finset.univ.image (indepNeighborsCard counterexample160)).max' (by simp) = 2 := by
   unfold indepNeighborsCard
   simp_rw [indep_num_eq_computable]
   unfold computable_indep_num
-  decide +native
+  decide
 
+/-- Kernel-checked finite verification of the maximum triangle incidence. -/
 lemma counterexample160_max_triangles :
     maxTrianglesAtVertex counterexample160 = 2 := by
   unfold maxTrianglesAtVertex numTrianglesAtVertex
-  decide +native
+  decide
 
+/-- Kernel-checked finite verification of the induced four-cycle count. -/
 lemma counterexample160_induced_C4_count :
     countInducedC4 counterexample160 = 2 := by
   unfold countInducedC4 isInducedC4
-  decide +native
+  decide
 
 /-- The maximum number of leaves of a spanning tree never exceeds the number of vertices. -/
 lemma Ls_le_card {α : Type*} [Fintype α] [DecidableEq α]
