@@ -119,8 +119,8 @@ lemma girth_add_one_le_card_of_tree_with_two_leaves_and_external_chord
   have hUcard : U.card = p.length + 3 := by
     have hxIns : x ∉ insert y Q := by simp [hxy, hxQ]
     rw [show U = insert x (insert y Q) by rfl,
-      Finset.card_insert_of_not_mem hxIns,
-      Finset.card_insert_of_not_mem hyQ, hQcard]
+      Finset.card_insert_of_notMem hxIns,
+      Finset.card_insert_of_notMem hyQ, hQcard]
     omega
   have hcard : p.length + 3 ≤ S.card := by
     rw [← hUcard]
