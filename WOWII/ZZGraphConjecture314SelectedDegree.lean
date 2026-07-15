@@ -33,9 +33,15 @@ lemma induced_minimalTDS_degree_le_two
   have hthree : 2 < ((G.induce (S : Set α)).neighborFinset r).card := by omega
   obtain ⟨a, ha, b, hb, c, hc, hab, hac, hbc⟩ :=
     Finset.two_lt_card.mp hthree
-  have hra : G.Adj r a := (mem_neighborFinset _ _ _).mp ha
-  have hrb : G.Adj r b := (mem_neighborFinset _ _ _).mp hb
-  have hrc : G.Adj r c := (mem_neighborFinset _ _ _).mp hc
+  have hraInd : (G.induce (S : Set α)).Adj r a :=
+    (mem_neighborFinset _ _ _).mp ha
+  have hrbInd : (G.induce (S : Set α)).Adj r b :=
+    (mem_neighborFinset _ _ _).mp hb
+  have hrcInd : (G.induce (S : Set α)).Adj r c :=
+    (mem_neighborFinset _ _ _).mp hc
+  have hra : G.Adj (r : α) (a : α) := hraInd
+  have hrb : G.Adj (r : α) (b : α) := hrbInd
+  have hrc : G.Adj (r : α) (c : α) := hrcInd
   have hab' : (a : α) ≠ b := by
     intro hEq
     exact hab (Subtype.ext hEq)
