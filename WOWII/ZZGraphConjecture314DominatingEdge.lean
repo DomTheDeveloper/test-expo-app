@@ -48,33 +48,43 @@ lemma minimalTDS_card_eq_two_of_bipartite_dominating_edge
       exact hpart b₂ a₂ hb₂a₂ (h.trans ha₂side.symm)
     have hbside : side b₁ = side b₂ := by
       cases hs : s <;> cases h1 : side b₁ <;> cases h2 : side b₂ <;> simp_all
+    have hb₁cSide : side b₁ = side c := by
+      cases hs : s <;> cases h1 : side b₁ <;> cases hc : side c <;> simp_all
+    have hb₂cSide : side b₂ = side c := by
+      cases hs : s <;> cases h2 : side b₂ <;> cases hc : side c <;> simp_all
     have hb12 : b₁ ≠ b₂ := by
       intro h
       subst b₂
-      have := hb₁priv a₂ ha₂S hb₂a₂
-      exact ha12 this.symm
+      have hEq := hb₁priv a₂ ha₂S hb₂a₂
+      exact ha12 hEq.symm
     have hb₁c : b₁ ≠ c := by
       intro h
       subst b₁
       have hcA₂ : G.Adj c a₂ := hcDom a₂ ha₂side
-      have := hb₁priv a₂ ha₂S hcA₂
-      exact ha12 this.symm
+      have hEq := hb₁priv a₂ ha₂S hcA₂
+      exact ha12 hEq.symm
     have hb₂c : b₂ ≠ c := by
       intro h
       subst b₂
       have hcA₁ : G.Adj c a₁ := hcDom a₁ ha₁side
-      have := hb₂priv a₁ ha₁S hcA₁
-      exact ha12 this
-    have hb₁a₂ : b₁ ≠ a₂ := hb₁a₁.ne.trans_ne ha12
-    have hb₂a₁ : b₂ ≠ a₁ := hb₂a₂.ne.trans_ne ha12.symm
+      have hEq := hb₂priv a₁ ha₁S hcA₁
+      exact ha12 hEq
+    have hb₁a₂ : b₁ ≠ a₂ := by
+      intro h
+      subst b₁
+      exact hb₁side_ne ha₂side
+    have hb₂a₁ : b₂ ≠ a₁ := by
+      intro h
+      subst b₂
+      exact hb₂side_ne ha₁side
     have hcA₁ : G.Adj c a₁ := hcDom a₁ ha₁side
     have hcA₂ : G.Adj c a₂ := hcDom a₂ ha₂side
     have hn_b₁_c : ¬G.Adj b₁ c := by
       intro h
-      exact hpart b₁ c h (by simpa [hb₁side_ne] using hcSide.symm)
+      exact hpart b₁ c h hb₁cSide
     have hn_b₂_c : ¬G.Adj b₂ c := by
       intro h
-      exact hpart b₂ c h (by simpa [hb₂side_ne] using hcSide.symm)
+      exact hpart b₂ c h hb₂cSide
     have hn_b₁_b₂ : ¬G.Adj b₁ b₂ := by
       intro h
       exact hpart b₁ b₂ h hbside
@@ -89,12 +99,12 @@ lemma minimalTDS_card_eq_two_of_bipartite_dominating_edge
       exact ha12 (hb₂priv a₁ ha₁S h)
     apply hNoP5 b₁ a₁ c a₂ b₂
     unfold FormsInducedP5
-    refine ⟨hb₁a₁.ne, hb₁c, ?_, hb12, hcA₁.ne, ?_, hb₂a₁.symm,
-      hcA₂.ne, hb₂c.symm, hb₂a₂.ne.symm, hb₁a₁, hcA₁.symm,
-      hcA₂, hb₂a₂.symm, hn_b₁_c, hn_b₁_a₂, hn_b₁_b₂,
+    exact ⟨hb₁a₁.ne, hb₁c, hb₁a₂, hb12,
+      hcA₁.ne.symm, ha12, hb₂a₁.symm,
+      hcA₂.ne, hb₂c.symm, hb₂a₂.ne.symm,
+      hb₁a₁, hcA₁.symm, hcA₂, hb₂a₂.symm,
+      hn_b₁_c, hn_b₁_a₂, hn_b₁_b₂,
       hn_a₁_a₂, hn_b₂_a₁.symm, hn_b₂_c.symm⟩
-    · exact hb₁a₂
-    · exact ha12
   obtain ⟨a, haS, hva⟩ := hS.1 v
   have haSide : side a = false := by
     have hne := hpart v a hva
