@@ -46,8 +46,13 @@ lemma girth_sub_one_le_largestInducedTreeSize (G : SimpleGraph α)
     [DecidableRel G.Adj] (hcyc : ¬G.IsAcyclic) :
     G.girth - 1 ≤ largestInducedTreeSize G := by
   obtain ⟨a, w, hw, hgw⟩ := SimpleGraph.exists_girth_eq_length.mpr hcyc
+  have hwtail : w.tail.IsPath := by
+    have hc : (Walk.cons (w.adj_snd hw.not_nil) w.tail).IsCycle := by
+      rw [w.cons_tail_eq hw.not_nil]
+      exact hw
+    exact ((Walk.cons_isCycle_iff _ _).mp hc).1
   let q := w.tail.tail
-  have hq : q.IsPath := hw.isPath_tail.tail
+  have hq : q.IsPath := hwtail.tail
   have hthree : 3 ≤ w.length := hw.three_le_length
   have hqlen : q.length + 1 = G.girth - 1 := by
     simp only [q, Walk.tail, Walk.drop_length]
