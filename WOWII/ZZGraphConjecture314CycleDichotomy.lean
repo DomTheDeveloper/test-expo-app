@@ -190,7 +190,7 @@ lemma exists_bipartite_side_of_no_inducedC5
           p.getVert 0 = r := by simp
           _ = b := hrbEq
           _ = p.getVert 2 := by rfl
-      have hidx := hp.getVert_injOn (by omega) (by omega) hget
+      have hidx := hp.getVert_injOn (by simp [hplen]) (by simp [hplen]) hget
       omega
     have hr_ne_x : r ≠ x := by
       intro hrxEq
@@ -204,7 +204,7 @@ lemma exists_bipartite_side_of_no_inducedC5
     have ha_ne_x : a ≠ x := by
       intro haxEq
       have hget : p.getVert 1 = p.getVert 3 := by simpa [a, hend] using haxEq
-      have hidx := hp.getVert_injOn (by omega) (by omega) hget
+      have hidx := hp.getVert_injOn (by simp [hplen]) (by simp [hplen]) hget
       omega
     have ha_ne_y : a ≠ y := by
       intro hayEq
