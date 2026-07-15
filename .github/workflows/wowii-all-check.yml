@@ -5,6 +5,12 @@ on:
     paths:
       - 'WOWII/**'
       - '.github/workflows/wowii-all-check.yml'
+  push:
+    branches:
+      - formal-conjectures-wowii-143
+    paths:
+      - 'WOWII/**'
+      - '.github/workflows/wowii-all-check.yml'
   workflow_dispatch:
 
 jobs:
