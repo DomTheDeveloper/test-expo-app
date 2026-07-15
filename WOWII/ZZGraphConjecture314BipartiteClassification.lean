@@ -1,5 +1,6 @@
 import WOWII.ZZGraphConjecture314GeodesicP5
 import WOWII.ZZGraphConjecture314ChainGraph
+import WOWII.ZZGraphConjecture314ConditionalFinal
 
 /-!
 The bipartite half of the structural classification for WOWII Graph Conjecture
@@ -57,7 +58,7 @@ lemma exists_common_neighbor_of_bipartite_noP5
   have hlen : p.length = 2 := hgeo.trans htwo
   let c := p.getVert 1
   have hac : G.Adj a c := by
-    exact p.adj_getVert_succ (i := 0) (by omega)
+    simpa [c] using p.adj_getVert_succ (i := 0) (by omega)
   have hcb : G.Adj c b := by
     have h' := p.adj_getVert_succ (i := 1) (by omega)
     have hend : p.getVert 2 = b := by simpa [hlen] using p.getVert_length
@@ -90,8 +91,8 @@ lemma nested_neighborhoods_of_bipartite_noP5
   by_contra hnay
   obtain ⟨c, hcside, hca, hcb⟩ :=
     exists_common_neighbor_of_bipartite_noP5 G hG side hpart hNoP5 hsame hab
-  have hxside_ne : side x ≠ side a := hpart a x hax
-  have hyside_ne : side y ≠ side b := hpart b y hby
+  have hxside_ne : side x ≠ side a := (hpart a x hax).symm
+  have hyside_ne : side y ≠ side b := (hpart b y hby).symm
   have hxcy : side x = side c ∧ side c = side y := by
     constructor
     · exact bool_eq_of_ne_same_bip hxside_ne hcside
