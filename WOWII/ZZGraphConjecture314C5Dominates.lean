@@ -27,14 +27,14 @@ private lemma cycle_two_step_not_adj
     {G : SimpleGraph α} {c : Fin 5 → α}
     (hc : IsInducedC5Embedding G c) (i : Fin 5) :
     ¬G.Adj (c i) (c (i + 2)) := by
-  rw [hc.2]
+  rw [hc.2 i (i + 2)]
   fin_cases i <;> decide
 
 private lemma cycle_back_two_step_not_adj
     {G : SimpleGraph α} {c : Fin 5 → α}
     (hc : IsInducedC5Embedding G c) (i : Fin 5) :
     ¬G.Adj (c i) (c (i - 2)) := by
-  rw [hc.2]
+  rw [hc.2 i (i - 2)]
   fin_cases i <;> decide
 
 /-- Every vertex has a neighbor on an induced five-cycle under the exact
@@ -79,6 +79,17 @@ lemma exists_adj_cycleVertex_of_inducedC5
       intro h
       exact hTriFree a (c i) (c (i - 1)) hai (cycle_back_step_adj hc i) h.symm
     have hx_cycle : ∀ j : Fin 5, ¬G.Adj x (c j) := hnone
+    have hx_cycle_ne : ∀ j : Fin 5, x ≠ c j := by
+      intro j hxj
+      subst x
+      exact hnone (j + 1) (cycle_step_adj hc j)
+    have ha_cycle_ne : ∀ j : Fin 5, a ≠ c j := by
+      intro j haj
+      subst a
+      exact hnone j hxa
+    have hc_ne : ∀ {j k : Fin 5}, j ≠ k → c j ≠ c k := by
+      intro j k hjk hck
+      exact hjk (hc.1 hck)
     by_cases ha2 : G.Adj a (c (i + 2))
     · have hbackPair : G.Adj (c (i - 2)) (c (i + 2)) := by
         apply (hc.2 (i - 2) (i + 2)).mpr
@@ -86,28 +97,32 @@ lemma exists_adj_cycleVertex_of_inducedC5
       have haBack2 : ¬G.Adj a (c (i - 2)) := by
         intro h
         exact hTriFree a (c (i + 2)) (c (i - 2)) ha2 hbackPair.symm h.symm
+      have h_i_prev : c i ≠ c (i - 1) :=
+        hc_ne (by fin_cases i <;> decide)
+      have h_i_back2 : c i ≠ c (i - 2) :=
+        hc_ne (by fin_cases i <;> decide)
+      have h_prev_back2 : c (i - 1) ≠ c (i - 2) :=
+        hc_ne (by fin_cases i <;> decide)
       apply hNoP5 x a (c i) (c (i - 1)) (c (i - 2))
       unfold FormsInducedP5
-      have hci1 := cycle_back_step_adj hc i
-      have hci2 := cycle_back_step_adj hc (i - 1)
-      exact ⟨hxa.ne, (hx_cycle i).ne, (hx_cycle (i - 1)).ne,
-        (hx_cycle (i - 2)).ne,
-        hai.ne, ha_prev.ne, haBack2.ne,
-        hci1.ne, (cycle_back_two_step_not_adj hc i).ne,
-        hci2.ne,
-        hxa, hai, hci1, hci2,
+      exact ⟨hxa.ne, hx_cycle_ne i, hx_cycle_ne (i - 1), hx_cycle_ne (i - 2),
+        ha_cycle_ne i, ha_cycle_ne (i - 1), ha_cycle_ne (i - 2),
+        h_i_prev, h_i_back2, h_prev_back2,
+        hxa, hai, cycle_back_step_adj hc i, cycle_back_step_adj hc (i - 1),
         hx_cycle i, hx_cycle (i - 1), hx_cycle (i - 2),
         ha_prev, haBack2, cycle_back_two_step_not_adj hc i⟩
-    · apply hNoP5 x a (c i) (c (i + 1)) (c (i + 2))
+    · have h_i_next : c i ≠ c (i + 1) :=
+        hc_ne (by fin_cases i <;> decide)
+      have h_i_two : c i ≠ c (i + 2) :=
+        hc_ne (by fin_cases i <;> decide)
+      have h_next_two : c (i + 1) ≠ c (i + 2) :=
+        hc_ne (by fin_cases i <;> decide)
+      apply hNoP5 x a (c i) (c (i + 1)) (c (i + 2))
       unfold FormsInducedP5
-      have hci1 := cycle_step_adj hc i
-      have hci2 := cycle_step_adj hc (i + 1)
-      exact ⟨hxa.ne, (hx_cycle i).ne, (hx_cycle (i + 1)).ne,
-        (hx_cycle (i + 2)).ne,
-        hai.ne, ha_next.ne, ha2.ne,
-        hci1.ne, (cycle_two_step_not_adj hc i).ne,
-        hci2.ne,
-        hxa, hai, hci1, hci2,
+      exact ⟨hxa.ne, hx_cycle_ne i, hx_cycle_ne (i + 1), hx_cycle_ne (i + 2),
+        ha_cycle_ne i, ha_cycle_ne (i + 1), ha_cycle_ne (i + 2),
+        h_i_next, h_i_two, h_next_two,
+        hxa, hai, cycle_step_adj hc i, cycle_step_adj hc (i + 1),
         hx_cycle i, hx_cycle (i + 1), hx_cycle (i + 2),
         ha_next, ha2, cycle_two_step_not_adj hc i⟩
   · obtain ⟨p, hp, hpgeo⟩ := hG.exists_path_of_dist x (c i)
@@ -136,13 +151,31 @@ lemma exists_adj_cycleVertex_of_inducedC5
       exact hTriFree x a b hxa hab h.symm
     have hxi : ¬G.Adj x (c i) := hnone i
     have hxnext : ¬G.Adj x (c (i + 1)) := hnone (i + 1)
+    have hx_cycle_ne : ∀ j : Fin 5, x ≠ c j := by
+      intro j hxj
+      subst x
+      exact hnone (j + 1) (cycle_step_adj hc j)
+    have ha_cycle_ne : ∀ j : Fin 5, a ≠ c j := by
+      intro j haj
+      subst a
+      exact hnone j hxa
+    have hxb_ne : x ≠ b := by
+      intro h
+      subst b
+      exact hnone i hbi
+    have hbnext_ne : b ≠ c (i + 1) := by
+      intro h
+      subst b
+      exact haNoCycle (i + 1) hab
+    have h_i_next : c i ≠ c (i + 1) := by
+      intro h
+      exact (by fin_cases i <;> decide : i ≠ i + 1) (hc.1 h)
     apply hNoP5 x a b (c i) (c (i + 1))
     unfold FormsInducedP5
-    have hstep := cycle_step_adj hc i
-    exact ⟨hxa.ne, hxb.ne, hxi.ne, hxnext.ne,
-      hab.ne, (haNoCycle i).ne, (haNoCycle (i + 1)).ne,
-      hbi.ne, hbnext.ne, hstep.ne,
-      hxa, hab, hbi, hstep,
+    exact ⟨hxa.ne, hxb_ne, hx_cycle_ne i, hx_cycle_ne (i + 1),
+      hab.ne, ha_cycle_ne i, ha_cycle_ne (i + 1),
+      hbi.ne, hbnext_ne, h_i_next,
+      hxa, hab, hbi, cycle_step_adj hc i,
       hxb, hxi, hxnext, haNoCycle i, haNoCycle (i + 1), hbnext⟩
 
 end WrittenOnTheWallII.GraphConjecture314
