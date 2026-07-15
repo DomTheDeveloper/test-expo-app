@@ -1,4 +1,4 @@
-import WOWII.GraphConjecture143Proof
+import FormalConjectures.WrittenOnTheWallII.GraphConjecture143
 
 namespace WrittenOnTheWallII.GraphConjecture143
 
