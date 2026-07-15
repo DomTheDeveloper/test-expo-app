@@ -41,7 +41,7 @@ lemma exists_inducedC5Embedding_of_FormsInducedC5
     fin_cases i <;> fin_cases j <;> simp_all [c]
   · intro i j
     fin_cases i <;> fin_cases j <;>
-      simp_all [c, cycleGraph, Fin.ext_iff]
+      simp_all [c, cycleGraph_adj', Fin.ext_iff]
 
 /-- Every indexed cycle vertex has its two expected cycle neighbors. -/
 lemma inducedC5Embedding_adj_pred_succ
