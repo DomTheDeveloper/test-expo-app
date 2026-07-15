@@ -83,10 +83,11 @@ lemma largestInducedPathSize_ge_five_of_FormsInducedP5
           Fintype.card ↥(p.toSubgraph.coe.neighborSet ⟨p.getVert 0, hmem⟩) =
             Fintype.card ↥(p.toSubgraph.neighborSet (p.getVert 0)) :=
         Fintype.card_congr (p.toSubgraph.coeNeighborSetEquiv _)
-      rw [← card_neighborSet_eq_degree, hcard,
-        show p.getVert 0 = x0 by simp,
-        hp.neighborSet_toSubgraph_startpoint (by simp [p])]
-      simp
+      rw [← card_neighborSet_eq_degree]
+      exact hcard.le.trans (by
+        rw [show p.getVert 0 = x0 by simp,
+          hp.neighborSet_toSubgraph_startpoint (by simp [p])]
+        simp)
     · have hmem : p.getVert 1 ∈ p.toSubgraph.verts := by
         apply p.mem_verts_toSubgraph.mpr
         exact Walk.mem_support_iff_exists_getVert.mpr ⟨1, rfl, by simp [p]⟩
@@ -98,9 +99,10 @@ lemma largestInducedPathSize_ge_five_of_FormsInducedP5
           Fintype.card ↥(p.toSubgraph.coe.neighborSet ⟨p.getVert 1, hmem⟩) =
             Fintype.card ↥(p.toSubgraph.neighborSet (p.getVert 1)) :=
         Fintype.card_congr (p.toSubgraph.coeNeighborSetEquiv _)
-      rw [← card_neighborSet_eq_degree, hcard,
-        hp.neighborSet_toSubgraph_internal (by omega) (by simp [p])]
-      simp
+      rw [← card_neighborSet_eq_degree]
+      exact hcard.le.trans (by
+        rw [hp.neighborSet_toSubgraph_internal (by omega) (by simp [p])]
+        simp)
     · have hmem : p.getVert 2 ∈ p.toSubgraph.verts := by
         apply p.mem_verts_toSubgraph.mpr
         exact Walk.mem_support_iff_exists_getVert.mpr ⟨2, rfl, by simp [p]⟩
@@ -112,9 +114,10 @@ lemma largestInducedPathSize_ge_five_of_FormsInducedP5
           Fintype.card ↥(p.toSubgraph.coe.neighborSet ⟨p.getVert 2, hmem⟩) =
             Fintype.card ↥(p.toSubgraph.neighborSet (p.getVert 2)) :=
         Fintype.card_congr (p.toSubgraph.coeNeighborSetEquiv _)
-      rw [← card_neighborSet_eq_degree, hcard,
-        hp.neighborSet_toSubgraph_internal (by omega) (by simp [p])]
-      simp
+      rw [← card_neighborSet_eq_degree]
+      exact hcard.le.trans (by
+        rw [hp.neighborSet_toSubgraph_internal (by omega) (by simp [p])]
+        simp)
     · have hmem : p.getVert 3 ∈ p.toSubgraph.verts := by
         apply p.mem_verts_toSubgraph.mpr
         exact Walk.mem_support_iff_exists_getVert.mpr ⟨3, rfl, by simp [p]⟩
@@ -126,9 +129,10 @@ lemma largestInducedPathSize_ge_five_of_FormsInducedP5
           Fintype.card ↥(p.toSubgraph.coe.neighborSet ⟨p.getVert 3, hmem⟩) =
             Fintype.card ↥(p.toSubgraph.neighborSet (p.getVert 3)) :=
         Fintype.card_congr (p.toSubgraph.coeNeighborSetEquiv _)
-      rw [← card_neighborSet_eq_degree, hcard,
-        hp.neighborSet_toSubgraph_internal (by omega) (by simp [p])]
-      simp
+      rw [← card_neighborSet_eq_degree]
+      exact hcard.le.trans (by
+        rw [hp.neighborSet_toSubgraph_internal (by omega) (by simp [p])]
+        simp)
     · have hmem : p.getVert 4 ∈ p.toSubgraph.verts := by
         apply p.mem_verts_toSubgraph.mpr
         exact Walk.mem_support_iff_exists_getVert.mpr ⟨4, rfl, by simp [p]⟩
@@ -140,10 +144,11 @@ lemma largestInducedPathSize_ge_five_of_FormsInducedP5
           Fintype.card ↥(p.toSubgraph.coe.neighborSet ⟨p.getVert 4, hmem⟩) =
             Fintype.card ↥(p.toSubgraph.neighborSet (p.getVert 4)) :=
         Fintype.card_congr (p.toSubgraph.coeNeighborSetEquiv _)
-      rw [← card_neighborSet_eq_degree, hcard,
-        show p.getVert 4 = x4 by simp [p],
-        hp.neighborSet_toSubgraph_endpoint (by simp [p])]
-      simp
+      rw [← card_neighborSet_eq_degree]
+      exact hcard.le.trans (by
+        rw [show p.getVert 4 = x4 by simp [p],
+          hp.neighborSet_toSubgraph_endpoint (by simp [p])]
+        simp)
   have hdeg : ∀ v : (S : Set α), (G.induce (S : Set α)).degree v ≤ 2 := by
     intro v
     have hdegree :
