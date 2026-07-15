@@ -99,6 +99,38 @@ lemma geodesic_adj_mem_edges {G : SimpleGraph α} {u v : α} {p : G.Walk u v}
   · have hji : j < i := by omega
     simpa [Sym2.eq_swap] using forward hji hi hadj.symm
 
+lemma geodesic_support_induces_tree {G : SimpleGraph α} {u v : α} {p : G.Walk u v}
+    (hgeo : p.length = G.dist u v) :
+    (G.induce (p.support : Set α)).IsTree := by
+  have heq : G.induce (p.support : Set α) = p.toSubgraph.coe := by
+    ext x y
+    constructor
+    · intro hxy
+      change p.toSubgraph.Adj (x : α) (y : α)
+      rw [Walk.adj_toSubgraph_iff_mem_edges]
+      obtain ⟨i, hix, hi⟩ := Walk.mem_support_iff_exists_getVert.mp x.property
+      obtain ⟨j, hjy, hj⟩ := Walk.mem_support_iff_exists_getVert.mp y.property
+      have hadj : G.Adj (p.getVert i) (p.getVert j) := by
+        simpa [hix, hjy] using hxy
+      simpa [hix, hjy] using geodesic_adj_mem_edges hgeo hi hj hadj
+    · intro hxy
+      exact p.toSubgraph.adj_sub hxy
+  rw [heq]
+  exact path_toSubgraph_isTree (p.isPath_of_length_eq_dist hgeo)
+
+lemma dist_add_one_le_largestInducedTreeSize (G : SimpleGraph α) [DecidableRel G.Adj]
+    (hG : G.Connected) (u v : α) :
+    G.dist u v + 1 ≤ largestInducedTreeSize G := by
+  obtain ⟨p, hp, hgeo⟩ := hG.exists_path_of_dist u v
+  unfold largestInducedTreeSize
+  apply le_csSup
+  · exact ⟨Fintype.card α, by
+      rintro n ⟨s, rfl, _⟩
+      exact s.card_le_univ⟩
+  · refine ⟨p.support.toFinset, ?_, ?_⟩
+    · rw [List.toFinset_card_of_nodup hp.support_nodup, p.length_support, hgeo]
+    · simpa using geodesic_support_induces_tree hgeo
+
 lemma two_le_largestInducedTreeSize (G : SimpleGraph α) [DecidableRel G.Adj]
     (hG : G.Connected) [Nontrivial α] :
     2 ≤ largestInducedTreeSize G := by
