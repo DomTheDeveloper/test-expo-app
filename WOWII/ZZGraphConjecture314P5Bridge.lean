@@ -13,6 +13,7 @@ open WrittenOnTheWallII.GraphConjecture143
 
 variable {α : Type*} [Fintype α] [DecidableEq α]
 
+set_option maxHeartbeats 1000000 in
 lemma largestInducedPathSize_ge_five_of_FormsInducedP5
     (G : SimpleGraph α) [DecidableRel G.Adj]
     {x0 x1 x2 x3 x4 : α}
@@ -91,8 +92,7 @@ lemma largestInducedPathSize_ge_five_of_FormsInducedP5
               Fintype.card ↥({p.snd} : Set α) :=
             Fintype.card_congr (Equiv.setCongr hset)
           _ ≤ 2 := by simp
-      rw [← card_neighborSet_eq_degree]
-      exact hcard.le.trans hbound
+      simpa only [card_neighborSet_eq_degree] using hcard.le.trans hbound
     · have hmem : p.getVert 1 ∈ p.toSubgraph.verts := by
         apply p.mem_verts_toSubgraph.mpr
         exact Walk.mem_support_iff_exists_getVert.mpr ⟨1, rfl, by simp [p]⟩
@@ -111,8 +111,7 @@ lemma largestInducedPathSize_ge_five_of_FormsInducedP5
               Fintype.card ↥({p.getVert (1 - 1), p.getVert (1 + 1)} : Set α) :=
             Fintype.card_congr (Equiv.setCongr hset)
           _ ≤ 2 := by simp
-      rw [← card_neighborSet_eq_degree]
-      exact hcard.le.trans hbound
+      simpa only [card_neighborSet_eq_degree] using hcard.le.trans hbound
     · have hmem : p.getVert 2 ∈ p.toSubgraph.verts := by
         apply p.mem_verts_toSubgraph.mpr
         exact Walk.mem_support_iff_exists_getVert.mpr ⟨2, rfl, by simp [p]⟩
@@ -131,8 +130,7 @@ lemma largestInducedPathSize_ge_five_of_FormsInducedP5
               Fintype.card ↥({p.getVert (2 - 1), p.getVert (2 + 1)} : Set α) :=
             Fintype.card_congr (Equiv.setCongr hset)
           _ ≤ 2 := by simp
-      rw [← card_neighborSet_eq_degree]
-      exact hcard.le.trans hbound
+      simpa only [card_neighborSet_eq_degree] using hcard.le.trans hbound
     · have hmem : p.getVert 3 ∈ p.toSubgraph.verts := by
         apply p.mem_verts_toSubgraph.mpr
         exact Walk.mem_support_iff_exists_getVert.mpr ⟨3, rfl, by simp [p]⟩
@@ -151,8 +149,7 @@ lemma largestInducedPathSize_ge_five_of_FormsInducedP5
               Fintype.card ↥({p.getVert (3 - 1), p.getVert (3 + 1)} : Set α) :=
             Fintype.card_congr (Equiv.setCongr hset)
           _ ≤ 2 := by simp
-      rw [← card_neighborSet_eq_degree]
-      exact hcard.le.trans hbound
+      simpa only [card_neighborSet_eq_degree] using hcard.le.trans hbound
     · have hmem : p.getVert 4 ∈ p.toSubgraph.verts := by
         apply p.mem_verts_toSubgraph.mpr
         exact Walk.mem_support_iff_exists_getVert.mpr ⟨4, rfl, by simp [p]⟩
@@ -172,8 +169,7 @@ lemma largestInducedPathSize_ge_five_of_FormsInducedP5
               Fintype.card ↥({p.penultimate} : Set α) :=
             Fintype.card_congr (Equiv.setCongr hset)
           _ ≤ 2 := by simp
-      rw [← card_neighborSet_eq_degree]
-      exact hcard.le.trans hbound
+      simpa only [card_neighborSet_eq_degree] using hcard.le.trans hbound
   have hdeg : ∀ v : (S : Set α), (G.induce (S : Set α)).degree v ≤ 2 := by
     intro v
     have hdegree :
