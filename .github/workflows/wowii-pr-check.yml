@@ -1,0 +1,69 @@
+name: WOWII PR Lean Check
+
+on:
+  pull_request:
+    paths:
+      - 'WOWII/**'
+      - '.github/workflows/wowii-*.yml'
+  workflow_dispatch:
+
+jobs:
+  lean:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout campaign repository
+        uses: actions/checkout@v4
+
+      - name: Checkout Formal Conjectures
+        uses: actions/checkout@v4
+        with:
+          repository: google-deepmind/formal-conjectures
+          path: formal-conjectures
+
+      - name: Install elan
+        run: |
+          curl https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -sSf | sh -s -- -y
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+
+      - name: Restore Formal Conjectures build cache
+        uses: actions/cache@v4
+        with:
+          path: formal-conjectures/.lake/build
+          key: wowii-formal-conjectures-${{ runner.os }}-${{ hashFiles('formal-conjectures/lean-toolchain', 'formal-conjectures/lake-manifest.json') }}
+
+      - name: Download Mathlib cache
+        working-directory: formal-conjectures
+        run: lake exe cache get
+
+      - name: Build active target modules
+        working-directory: formal-conjectures
+        run: |
+          lake build \
+            FormalConjectures.WrittenOnTheWallII.GraphConjecture160 \
+            FormalConjectures.WrittenOnTheWallII.GraphConjecture65 \
+            FormalConjectures.WrittenOnTheWallII.GraphConjecture143
+
+      - name: Compile campaign files
+        id: compile
+        working-directory: formal-conjectures
+        shell: bash
+        run: |
+          set +e
+          status=0
+          : > ../lean-output.log
+          export LEAN_PATH="..:${LEAN_PATH:-}"
+          for f in ../WOWII/*.lean; do
+            echo "=== Checking $f ===" | tee -a ../lean-output.log
+            lake env lean -o "${f%.lean}.olean" "$f" >> ../lean-output.log 2>&1
+            code=$?
+            if [ "$code" -ne 0 ]; then status=$code; fi
+          done
+          cat ../lean-output.log
+          exit "$status"
+
+      - name: Upload Lean output
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lean-output
+          path: lean-output.log
