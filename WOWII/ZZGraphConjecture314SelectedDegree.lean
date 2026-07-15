@@ -2,7 +2,7 @@ import WOWII.ZZGraphConjecture314MinimalTDSStructure
 
 /-!
 In a triangle-free induced-P5-free graph, the graph induced by a minimal total
-dominating set has maximum degree at most two.
+dominating set has every degree between one and two.
 -/
 
 namespace WrittenOnTheWallII.GraphConjecture314
@@ -10,6 +10,16 @@ namespace WrittenOnTheWallII.GraphConjecture314
 open Classical SimpleGraph
 
 variable {α : Type*} [Fintype α] [DecidableEq α]
+
+lemma one_le_induced_minimalTDS_degree
+    (G : SimpleGraph α) [DecidableRel G.Adj]
+    {S : Finset α} (hS : IsMinimalTotalDominatingSet G S)
+    (r : (S : Set α)) :
+    1 ≤ (G.induce (S : Set α)).degree r := by
+  rw [← card_neighborFinset_eq_degree, Finset.one_le_card]
+  obtain ⟨y, hyS, hry⟩ := hS.1 (r : α)
+  refine ⟨⟨y, by simpa using hyS⟩, ?_⟩
+  simpa only [mem_neighborFinset] using hry
 
 lemma induced_minimalTDS_degree_le_two
     (G : SimpleGraph α) [DecidableRel G.Adj]
