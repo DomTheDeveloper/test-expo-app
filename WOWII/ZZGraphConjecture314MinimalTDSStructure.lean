@@ -37,7 +37,7 @@ lemma private_neighbors_adj_of_common_center
   have hxne_r : x ≠ r := by
     intro hxr
     subst x
-    exact hab (hxpriv b hbS hrb)
+    exact hab (hxpriv b hbS hrb).symm
   have hxne_b : x ≠ b := by
     intro hxb
     subst x
@@ -46,7 +46,7 @@ lemma private_neighbors_adj_of_common_center
   have hyne_r : y ≠ r := by
     intro hyr
     subst y
-    exact hab (hypriv a haS har.symm).symm
+    exact hab (hypriv a haS har.symm)
   have hyne_a : y ≠ a := by
     intro hya
     subst y
@@ -54,16 +54,16 @@ lemma private_neighbors_adj_of_common_center
   have hxne_y : x ≠ y := by
     intro hxy
     subst y
-    exact hab (hxpriv b hbS hyb)
+    exact hab (hxpriv b hbS hyb).symm
   have hnxr : ¬G.Adj x r := by
     intro hxr
     exact hTriFree x a r hxa har hxr.symm
   have hnxb : ¬G.Adj x b := by
     intro hxb
-    exact hab (hxpriv b hbS hxb)
+    exact hab (hxpriv b hbS hxb).symm
   have hnay : ¬G.Adj a y := by
     intro hay
-    exact hab (hypriv a haS hay.symm).symm
+    exact hab (hypriv a haS hay.symm)
   have hnry : ¬G.Adj r y := by
     intro hry
     exact hTriFree r b y hrb hyb.symm hry.symm
@@ -116,24 +116,24 @@ lemma no_inducedP4_inside_minimalTDS
   have hxne_b : x ≠ b := by
     intro hxb
     subst x
-    exact hac_ne (hxpriv c hcS hbc)
+    exact hac_ne (hxpriv c hcS hbc).symm
   have hxne_c : x ≠ c := by
     intro hxc
     subst x
-    exact hab_ne (hxpriv b hbS hbc.symm)
+    exact hab_ne (hxpriv b hbS hbc.symm).symm
   have hxne_d : x ≠ d := by
     intro hxd
     subst x
-    exact hac_ne (hxpriv c hcS hcd.symm)
+    exact hac_ne (hxpriv c hcS hcd.symm).symm
   have hnxb : ¬G.Adj x b := by
     intro hxb
-    exact hab_ne (hxpriv b hbS hxb)
+    exact hab_ne (hxpriv b hbS hxb).symm
   have hnxc : ¬G.Adj x c := by
     intro hxc
-    exact hac_ne (hxpriv c hcS hxc)
+    exact hac_ne (hxpriv c hcS hxc).symm
   have hnxd : ¬G.Adj x d := by
     intro hxd
-    exact had_ne (hxpriv d hdS hxd)
+    exact had_ne (hxpriv d hdS hxd).symm
   apply hNoP5 x a b c d
   unfold FormsInducedP5
   exact ⟨hxne_a, hxne_b, hxne_c, hxne_d,
