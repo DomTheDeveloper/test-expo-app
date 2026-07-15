@@ -1,3 +1,0 @@
-import WOWII.GraphConjecture143Leaves
-
-#check WrittenOnTheWallII.GraphConjecture143.exists_two_degree_one_of_secondSmallestDegree_eq_one
