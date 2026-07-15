@@ -70,16 +70,16 @@ lemma exists_bipartite_side_of_no_inducedC5
   have hle : G.dist r x ≤ 3 := dist_le_three_of_no_FormsInducedP5 G hG hNoP5 r x
   interval_cases hd : G.dist r x
   · have hx : x = r := (hG.dist_eq_zero_iff).mp hd
-    have hy0 : G.dist r y = 0 := by simpa [heq] using hd
+    have hy0 : G.dist r y = 0 := by simpa [← heq] using hd
     have hy : y = r := (hG.dist_eq_zero_iff).mp hy0
     subst x
     subst y
     exact G.loopless r hxy
   · have hrx : G.Adj r x := dist_eq_one_iff_adj.mp hd
-    have hrydist : G.dist r y = 1 := heq ▸ hd
+    have hrydist : G.dist r y = 1 := by omega
     have hry : G.Adj r y := dist_eq_one_iff_adj.mp hrydist
     exact hTriFree r x y hrx hxy hry.symm
-  · have hdy : G.dist r y = 2 := heq ▸ hd
+  · have hdy : G.dist r y = 2 := by omega
     obtain ⟨p, hp, hpgeo⟩ := hG.exists_path_of_dist r x
     obtain ⟨q, hq, hqgeo⟩ := hG.exists_path_of_dist r y
     have hplen : p.length = 2 := hpgeo.trans hd
@@ -146,7 +146,7 @@ lemma exists_bipartite_side_of_no_inducedC5
         hx_ne_y, hx_ne_b, hy_ne_b,
         hra, hax, hxy, hby.symm, hrb.symm,
         hrx, hry, hay, habn, hxb⟩
-  · have hdy : G.dist r y = 3 := heq ▸ hd
+  · have hdy : G.dist r y = 3 := by omega
     obtain ⟨p, hp, hpgeo⟩ := hG.exists_path_of_dist r x
     have hplen : p.length = 3 := hpgeo.trans hd
     let a := p.getVert 1
@@ -198,16 +198,20 @@ lemma exists_bipartite_side_of_no_inducedC5
     have ha_ne_x : a ≠ x := by
       intro h
       subst x
-      exact hax hbx
+      have hdist1 : G.dist r a = 1 := dist_eq_one_iff_adj.mpr hra
+      omega
     have ha_ne_y : a ≠ y := by
       intro h
       subst y
-      exact hay hxy.symm
+      have hdist1 : G.dist r a = 1 := dist_eq_one_iff_adj.mpr hra
+      omega
     have hb_ne_x : b ≠ x := hbx.ne
     have hb_ne_y : b ≠ y := by
       intro h
       subst y
-      exact hby hxy.symm
+      have w : G.Walk r b := .cons hra (.cons hab .nil)
+      have hdist2 : G.dist r b ≤ 2 := by simpa using G.dist_le w
+      omega
     have hx_ne_y : x ≠ y := hxy.ne
     apply hNoP5 r a b x y
     unfold FormsInducedP5
