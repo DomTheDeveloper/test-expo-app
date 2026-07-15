@@ -18,12 +18,16 @@ private instance minimalTotalDominationDecidable (T : Finset (Fin 5)) :
   unfold IsMinimalTotalDominatingSet
   infer_instance
 
-/-- Every minimal total dominating set of the 5-cycle has three vertices. -/
+/-- Every minimal total dominating set of the 5-cycle has three vertices.
+
+This is checked by kernel reduction over the finite type `Fin 5`; unlike
+`native_decide`, it does not invoke generated native code and therefore remains
+compatible with the explicit no-`native_decide` proof audit. -/
 lemma cycleGraph_five_minimalTDS_card_eq_three
     (S : Finset (Fin 5))
     (hS : IsMinimalTotalDominatingSet (cycleGraph 5) S) :
     S.card = 3 := by
-  native_decide +revert
+  decide +revert
 
 /-- In particular, the 5-cycle is well totally dominated. -/
 lemma cycleGraph_five_isWellTotallyDominated :
