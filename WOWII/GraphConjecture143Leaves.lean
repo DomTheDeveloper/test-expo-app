@@ -38,12 +38,12 @@ lemma exists_two_degree_one_of_secondSmallestDegree_eq_one [Nontrivial α]
     have h := hsorted.rel_get_of_lt hi01
     simpa [i0, i1] using h
   have hget0pos : 0 < ds[0] := by
-    have hm : ds[0] ∈ ds := List.getElem_mem ds 0 (by omega)
+    have hm : ds[0] ∈ ds := List.getElem_mem (by omega)
     have hds_eq : ds =
         (Finset.univ.val.map (fun v => G.degree v)).sort (· ≤ ·) := rfl
     rw [hds_eq] at hm
     have hm' : ds[0] ∈ Finset.univ.val.map (fun v => G.degree v) :=
-      (Multiset.mem_sort.mp hm)
+      Multiset.mem_sort.mp hm
     obtain ⟨v, -, hv⟩ := Multiset.mem_map.mp hm'
     rw [← hv]
     exact degree_pos_of_connected hG v
@@ -59,16 +59,19 @@ lemma exists_two_degree_one_of_secondSmallestDegree_eq_one [Nontrivial α]
             have hd1 : d1 = 1 := by simpa [hds, hrest] using hget1
             subst d0
             subst d1
-            simp [hds, hrest]
-  have hcount_orig :
-      2 ≤ (Finset.univ.val.map (fun v => G.degree v)).count 1 := by
-    simpa [ds, degreeSequence] using hcount_ds
-  have hcount_vertices :
-      2 ≤ Multiset.countP (fun v : α => G.degree v = 1) Finset.univ.val := by
-    simpa [Multiset.count, Function.comp_def, eq_comm] using hcount_orig
+            simp
+  let D : Multiset ℕ := Finset.univ.val.map (fun v => G.degree v)
+  have hcoe : (↑ds : Multiset ℕ) = D := by
+    simp [ds, D, degreeSequence]
+  have hcount_orig : 2 ≤ D.count 1 := by
+    rw [← hcoe]
+    simpa using hcount_ds
   let L : Finset α := Finset.univ.filter (fun v => G.degree v = 1)
+  have hcount_eq : D.count 1 = L.card := by
+    rw [Multiset.count_map]
+    simp [D, L, eq_comm]
   have hLcard : 2 ≤ L.card := by
-    simpa [L, Multiset.card_filter] using hcount_vertices
+    rwa [← hcount_eq]
   have hLnonempty : L.Nonempty := by
     exact Finset.card_pos.mp (lt_of_lt_of_le (by omega) hLcard)
   obtain ⟨x, hx⟩ := hLnonempty
