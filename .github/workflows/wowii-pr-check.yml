@@ -39,6 +39,7 @@ jobs:
         working-directory: formal-conjectures
         run: |
           lake build \
+            Mathlib.Combinatorics.SimpleGraph.CycleGraph \
             FormalConjectures.WrittenOnTheWallII.GraphConjecture160 \
             FormalConjectures.WrittenOnTheWallII.GraphConjecture65 \
             FormalConjectures.WrittenOnTheWallII.GraphConjecture133 \
