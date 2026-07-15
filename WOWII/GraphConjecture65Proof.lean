@@ -84,8 +84,8 @@ lemma two_le_largestInducedForestSize (G : SimpleGraph α) [DecidableRel G.Adj]
       simp
     rw [hset]
     rw [induce_eq_coe_induce_top]
-    rw [← Subgraph.subgraphOfAdj_eq_induce huw]
-    exact (IsTree.coe_subgraphOfAdj huw).IsAcyclic
+    simpa only [Subgraph.subgraphOfAdj_eq_induce huw] using
+      (IsTree.coe_subgraphOfAdj huw).IsAcyclic
 
 /-- WOWII Conjecture 65. The two distance-minimum terms contribute at most two,
 and every nontrivial connected graph contains an induced two-vertex forest. -/
