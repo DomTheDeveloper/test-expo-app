@@ -1,7 +1,7 @@
 import FormalConjectures.WrittenOnTheWallII.GraphConjecture143
 
 /-!
-A short-path lemma for the proof of WOWII Graph Conjecture 143.
+Short-cycle lemmas for the proof of WOWII Graph Conjecture 143.
 -/
 
 namespace WrittenOnTheWallII.GraphConjecture143
@@ -39,5 +39,41 @@ lemma short_path_support_induces_tree {G : SimpleGraph α} {u v : α}
       simp [S]
     rw [hfin, List.toFinset_card_of_nodup hp.support_nodup, p.length_support]
   omega
+
+/-- Deleting two consecutive edges from a shortest cycle leaves an induced tree
+on `girth G - 1` vertices. -/
+lemma girth_sub_one_le_largestInducedTreeSize (G : SimpleGraph α)
+    [DecidableRel G.Adj] (hcyc : ¬G.IsAcyclic) :
+    G.girth - 1 ≤ largestInducedTreeSize G := by
+  obtain ⟨a, w, hw, hgw⟩ := SimpleGraph.exists_girth_eq_length.mpr hcyc
+  cases w with
+  | nil => exact (hw.not_nil rfl).elim
+  | @cons a b h p =>
+      have hp : p.IsPath := ((Walk.cons_isCycle_iff p h).mp hw).1
+      let q := p.tail
+      have hq : q.IsPath := hp.tail
+      have hgw' : G.girth = p.length + 1 := by
+        simpa [Walk.length_cons] using hgw
+      have hplen : 2 ≤ p.length := by
+        have hthree := hw.three_le_length
+        simp only [Walk.length_cons] at hthree
+        omega
+      have hqlen : q.length + 1 = G.girth - 1 := by
+        simp only [q, Walk.tail, Walk.drop_length]
+        omega
+      have hshort : q.length + 1 < G.girth := by omega
+      have htree := short_path_support_induces_tree hq hshort
+      unfold largestInducedTreeSize
+      apply le_csSup
+      · exact ⟨Fintype.card α, by
+          rintro n ⟨s, rfl, _⟩
+          exact s.card_le_univ⟩
+      · refine ⟨q.support.toFinset, ?_, ?_⟩
+        · rw [List.toFinset_card_of_nodup hq.support_nodup, q.length_support, hqlen]
+        · have hset : (↑q.support.toFinset : Set α) = {x : α | x ∈ q.support} := by
+            ext x
+            simp
+          rw [hset]
+          exact htree
 
 end WrittenOnTheWallII.GraphConjecture143
