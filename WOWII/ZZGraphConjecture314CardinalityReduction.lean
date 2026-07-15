@@ -23,7 +23,11 @@ lemma two_le_card_of_totalDominatingSet
   let x : α := Classical.ofNonempty
   obtain ⟨y, hyS, hxy⟩ := hS x
   obtain ⟨z, hzS, hyz⟩ := hS y
-  exact Finset.two_le_card.mpr ⟨y, hyS, z, hzS, hyz.ne⟩
+  have hsub : ({y, z} : Finset α) ⊆ S := by
+    simp [hyS, hzS]
+  calc
+    2 = ({y, z} : Finset α).card := by simp [hyz.ne]
+    _ ≤ S.card := Finset.card_le_card hsub
 
 /-- A triangle-free graph with a two-vertex total dominating set is bipartite,
 with the two vertices forming the dominating edge.  If the graph is also
@@ -38,9 +42,11 @@ lemma isWellTotallyDominated_of_totalDominating_pair
   have huv : G.Adj u v := by
     obtain ⟨w, hw, huw⟩ := hTD u
     simp only [Finset.mem_insert, Finset.mem_singleton] at hw
-    rcases hw with rfl | rfl
-    · exact (G.loopless u huw).elim
-    · exact huw
+    rcases hw with hwu | hwv
+    · subst w
+      exact (G.loopless u huw).elim
+    · subst w
+      exact huw
   let side : α → Bool := fun x => if G.Adj u x then true else false
   have hu : side u = false := by
     simp [side]
@@ -53,10 +59,12 @@ lemma isWellTotallyDominated_of_totalDominating_pair
     intro x hx
     obtain ⟨w, hw, hxw⟩ := hTD x
     simp only [Finset.mem_insert, Finset.mem_singleton] at hw
-    rcases hw with rfl | rfl
-    · have hnot : ¬G.Adj u x := by simpa [side] using hx
+    rcases hw with hwu | hwv
+    · subst w
+      have hnot : ¬G.Adj u x := by simpa [side] using hx
       exact (hnot hxw.symm).elim
-    · exact hxw.symm
+    · subst w
+      exact hxw.symm
   have hpart : ∀ x y : α, G.Adj x y → side x ≠ side y := by
     intro x y hxy hsame
     cases hxs : side x with
