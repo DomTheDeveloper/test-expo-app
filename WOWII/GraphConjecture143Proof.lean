@@ -55,9 +55,8 @@ lemma path_toSubgraph_spanningCoe_isAcyclic {G : SimpleGraph α} {u v : α}
 lemma path_toSubgraph_isTree {G : SimpleGraph α} {u v : α} {p : G.Walk u v}
     (hp : p.IsPath) : p.toSubgraph.coe.IsTree := by
   refine ⟨p.toSubgraph_connected.coe, ?_⟩
-  let f : p.toSubgraph.coe →g p.toSubgraph.spanningCoe where
-    toFun := Subtype.val
-    map_rel' := fun _ _ h => h
+  let f : p.toSubgraph.coe →g p.toSubgraph.spanningCoe :=
+    ⟨Subtype.val, fun h => h⟩
   exact IsAcyclic.comap f Subtype.val_injective
     (path_toSubgraph_spanningCoe_isAcyclic hp)
 
@@ -105,14 +104,20 @@ lemma geodesic_adj_mem_edges {G : SimpleGraph α} {u v : α} {p : G.Walk u v}
 lemma geodesic_support_induces_tree {G : SimpleGraph α} {u v : α} {p : G.Walk u v}
     (hgeo : p.length = G.dist u v) :
     (G.induce {x : α | x ∈ p.support}).IsTree := by
-  have heq : G.induce {x : α | x ∈ p.support} = p.toSubgraph.coe := by
+  have hverts : {x : α | x ∈ p.support} = p.toSubgraph.verts := by
+    ext x
+    simp [Walk.mem_verts_toSubgraph]
+  rw [hverts]
+  have heq : G.induce p.toSubgraph.verts = p.toSubgraph.coe := by
     ext x y
     constructor
     · intro hxy
       change p.toSubgraph.Adj (x : α) (y : α)
       rw [Walk.adj_toSubgraph_iff_mem_edges]
-      obtain ⟨i, hix, hi⟩ := Walk.mem_support_iff_exists_getVert.mp x.property
-      obtain ⟨j, hjy, hj⟩ := Walk.mem_support_iff_exists_getVert.mp y.property
+      have hx : (x : α) ∈ p.support := p.mem_verts_toSubgraph.mp x.property
+      have hy : (y : α) ∈ p.support := p.mem_verts_toSubgraph.mp y.property
+      obtain ⟨i, hix, hi⟩ := Walk.mem_support_iff_exists_getVert.mp hx
+      obtain ⟨j, hjy, hj⟩ := Walk.mem_support_iff_exists_getVert.mp hy
       have hadj : G.Adj (p.getVert i) (p.getVert j) := by
         simpa [hix, hjy] using hxy
       simpa [hix, hjy] using geodesic_adj_mem_edges hgeo hi hj hadj
@@ -132,7 +137,11 @@ lemma dist_add_one_le_largestInducedTreeSize (G : SimpleGraph α) [DecidableRel 
       exact s.card_le_univ⟩
   · refine ⟨p.support.toFinset, ?_, ?_⟩
     · rw [List.toFinset_card_of_nodup hp.support_nodup, p.length_support, hgeo]
-    · simpa using geodesic_support_induces_tree hgeo
+    · have hset : (↑p.support.toFinset : Set α) = {x : α | x ∈ p.support} := by
+        ext x
+        simp
+      rw [hset]
+      exact geodesic_support_induces_tree hgeo
 
 lemma two_le_largestInducedTreeSize (G : SimpleGraph α) [DecidableRel G.Adj]
     (hG : G.Connected) [Nontrivial α] :
