@@ -85,4 +85,20 @@ theorem counterexample160_refutes_statement :
   apply not_le_of_gt
   exact lt_of_le_of_lt counterexample160_Ls_le_five (by norm_num)
 
+/-- Repository-style resolution: the universally quantified conjecture is false. -/
+theorem conjecture160_false :
+    answer(False) ↔
+      ∀ (α : Type*) [Fintype α] [DecidableEq α] [Nontrivial α]
+        (G : SimpleGraph α) [DecidableRel G.Adj] (_ : G.Connected),
+        let maxL := (Finset.univ.image (indepNeighborsCard G)).max' (by simp)
+        let maxT := maxTrianglesAtVertex G
+        let cC4 := countInducedC4 G
+        (maxL : ℝ) + (maxT : ℝ) * (cC4 : ℝ) ≤ Ls G := by
+  constructor
+  · intro h
+    exact h.elim
+  · intro h
+    exact counterexample160_refutes_statement
+      (h (Fin 5) counterexample160 counterexample160_connected)
+
 end WrittenOnTheWallII.GraphConjecture160
