@@ -8,42 +8,38 @@ namespace WrittenOnTheWallII.GraphConjecture160
 
 open Classical SimpleGraph
 
+/-- The finite edge set of the counterexample. Keeping it as a `Finset` supplies
+an executable adjacency decision procedure for the concrete graph. -/
+def counterexample160Edges : Finset (Sym2 (Fin 5)) :=
+  {s(0,2), s(0,3), s(0,4), s(1,2), s(1,3), s(1,4), s(2,4)}
+
 /-- `K_{2,3}` with one additional edge inside the three-vertex part. -/
 def counterexample160 : SimpleGraph (Fin 5) :=
-  SimpleGraph.fromEdgeSet
-    {s(0,2), s(0,3), s(0,4), s(1,2), s(1,3), s(1,4), s(2,4)}
+  SimpleGraph.fromEdgeSet counterexample160Edges
 
-/-- A concrete spanning tree of `counterexample160`. -/
-def counterexample160Tree : SimpleGraph (Fin 5) :=
-  SimpleGraph.fromEdgeSet {s(0,2), s(0,3), s(0,4), s(1,2)}
+instance counterexample160DecidableAdj : DecidableRel counterexample160.Adj := by
+  intro u v
+  unfold counterexample160 counterexample160Edges SimpleGraph.fromEdgeSet
+  infer_instance
 
 lemma counterexample160_connected : counterexample160.Connected := by
-  unfold counterexample160
-  decide +native
-
-lemma counterexample160Tree_le : counterexample160Tree ≤ counterexample160 := by
-  unfold counterexample160Tree counterexample160
-  decide +native
-
-lemma counterexample160Tree_isTree : counterexample160Tree.IsTree := by
-  unfold counterexample160Tree
   decide +native
 
 lemma counterexample160_max_local_independence :
     (Finset.univ.image (indepNeighborsCard counterexample160)).max' (by simp) = 2 := by
   unfold indepNeighborsCard
   simp_rw [indep_num_eq_computable]
-  unfold computable_indep_num counterexample160
+  unfold computable_indep_num
   decide +native
 
 lemma counterexample160_max_triangles :
     maxTrianglesAtVertex counterexample160 = 2 := by
-  unfold maxTrianglesAtVertex numTrianglesAtVertex counterexample160
+  unfold maxTrianglesAtVertex numTrianglesAtVertex
   decide +native
 
 lemma counterexample160_induced_C4_count :
     countInducedC4 counterexample160 = 2 := by
-  unfold countInducedC4 isInducedC4 counterexample160
+  unfold countInducedC4 isInducedC4
   decide +native
 
 /-- The maximum number of leaves of a spanning tree never exceeds the number of vertices. -/
