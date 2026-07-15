@@ -56,12 +56,25 @@ jobs:
           rm -rf WOWII
           cp -R ../WOWII WOWII
           export LEAN_PATH="$PWD:${LEAN_PATH:-}"
-          for f in WOWII/*.lean; do
+
+          check_file() {
+            local f="$1"
             echo "=== Checking $f ===" | tee -a ../lean-output.log
             lake env lean -o "${f%.lean}.olean" "$f" >> ../lean-output.log 2>&1
-            code=$?
+            local code=$?
             if [ "$code" -ne 0 ]; then status=$code; fi
+          }
+
+          # Compile ordinary modules first. The conditional 314 assembly imports
+          # two other campaign modules, so it must be checked after those oleans exist.
+          for f in WOWII/*.lean; do
+            if [ "$f" = "WOWII/ZZGraphConjecture314ConditionalFinal.lean" ]; then
+              continue
+            fi
+            check_file "$f"
           done
+          check_file WOWII/ZZGraphConjecture314ConditionalFinal.lean
+
           cat ../lean-output.log
           exit "$status"
 
