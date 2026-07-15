@@ -24,7 +24,11 @@ lemma two_le_card_of_totalDominatingSet
   obtain ⟨y, hyS, hxy⟩ := hS x
   obtain ⟨z, hzS, hyz⟩ := hS y
   have hsub : ({y, z} : Finset α) ⊆ S := by
-    simp [hyS, hzS]
+    intro w hw
+    simp only [Finset.mem_insert, Finset.mem_singleton] at hw
+    rcases hw with rfl | rfl
+    · exact hyS
+    · exact hzS
   calc
     2 = ({y, z} : Finset α).card := (Finset.card_pair hyz.ne).symm
     _ ≤ S.card := Finset.card_le_card hsub
