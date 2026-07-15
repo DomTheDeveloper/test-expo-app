@@ -20,9 +20,9 @@ lemma induce_insert_isTree_of_unique_neighbor {G : SimpleGraph α}
     (G.induce ((insert z S : Finset α) : Set α)).IsTree := by
   let H := G.induce (S : Set α)
   let H' := G.induce ((insert z S : Finset α) : Set α)
-  let aH : H := ⟨a, by simpa [H] using haS⟩
-  let aH' : H' := ⟨a, by simp [H', haS]⟩
-  let zH' : H' := ⟨z, by simp [H']⟩
+  let aH : (S : Set α) := ⟨a, by simpa using haS⟩
+  let aH' : ((insert z S : Finset α) : Set α) := ⟨a, by simp [haS]⟩
+  let zH' : ((insert z S : Finset α) : Set α) := ⟨z, by simp⟩
   have hconn : H'.Connected := by
     rw [connected_iff_exists_forall_reachable]
     refine ⟨aH', ?_⟩
@@ -33,12 +33,14 @@ lemma induce_insert_isTree_of_unique_neighbor {G : SimpleGraph α}
       exact Adj.reachable (by simpa [H', aH', zH'] using hza.symm)
     · have hwS : (w : α) ∈ S := by
         have hwmem := w.property
-        simp only [H', Finset.coe_insert, Set.mem_insert_iff] at hwmem
+        simp only [Finset.coe_insert, Set.mem_insert_iff] at hwmem
         exact hwmem.resolve_left hwz
-      let wH : H := ⟨w, by simpa [H] using hwS⟩
+      let wH : (S : Set α) := ⟨w, by simpa using hwS⟩
       let incl : H →g H' :=
-        ⟨fun x => ⟨x.1, by simp [H', H, x.2]⟩, fun h => h⟩
-      have hr : H.Reachable aH wH := hT.1 aH wH
+        ⟨fun x => ⟨x.1, by simp [x.2]⟩, fun h => h⟩
+      have hr : H.Reachable aH wH := by
+        change (G.induce (S : Set α)).Reachable aH wH
+        exact hT.1 aH wH
       simpa [aH, aH', wH, incl] using hr.map incl
   refine ⟨hconn, ?_⟩
   intro u c hc
@@ -49,11 +51,11 @@ lemma induce_insert_isTree_of_unique_neighbor {G : SimpleGraph α}
     have hzp : H'.Adj zH' r.penultimate := (r.adj_penultimate hr.not_nil).symm
     have hsS : (r.snd : α) ∈ S := by
       have hs := r.snd.property
-      simp only [H', Finset.coe_insert, Set.mem_insert_iff] at hs
+      simp only [Finset.coe_insert, Set.mem_insert_iff] at hs
       exact hs.resolve_left fun h => hzs.ne (Subtype.ext h.symm)
     have hpS : (r.penultimate : α) ∈ S := by
       have hp := r.penultimate.property
-      simp only [H', Finset.coe_insert, Set.mem_insert_iff] at hp
+      simp only [Finset.coe_insert, Set.mem_insert_iff] at hp
       exact hp.resolve_left fun h => hzp.ne (Subtype.ext h.symm)
     have hsa : (r.snd : α) = a := huniq _ hsS (by exact hzs)
     have hpa : (r.penultimate : α) = a := huniq _ hpS (by exact hzp)
@@ -69,7 +71,7 @@ lemma induce_insert_isTree_of_unique_neighbor {G : SimpleGraph α}
       ⟨fun x => ⟨x.1.1, by
           have hxSupp : x.1 ∈ c.support := c.mem_verts_toSubgraph.mp x.2
           have hxmem := x.1.2
-          simp only [H', Finset.coe_insert, Set.mem_insert_iff] at hxmem
+          simp only [Finset.coe_insert, Set.mem_insert_iff] at hxmem
           exact hxmem.resolve_left fun hxz => hzc (by
             have : x.1 = zH' := Subtype.ext hxz
             simpa [this] using hxSupp)⟩,
@@ -80,6 +82,7 @@ lemma induce_insert_isTree_of_unique_neighbor {G : SimpleGraph α}
       apply Subtype.ext
       exact congrArg Subtype.val hxy
     have hcH : (c.mapToSubgraph.map f).IsCycle := hcsub.map hfinj
-    exact hT.2 _ _ hcH
+    change (G.induce (S : Set α)).IsAcyclic at hT
+    exact hT _ _ hcH
 
 end WrittenOnTheWallII.GraphConjecture143
