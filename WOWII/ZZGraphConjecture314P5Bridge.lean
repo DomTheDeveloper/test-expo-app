@@ -53,63 +53,83 @@ lemma largestInducedPathSize_ge_five_of_FormsInducedP5
         rcases a with ⟨a, ha⟩
         rcases b with ⟨b, hb⟩
         change p.toSubgraph.Adj a b ↔ G.Adj a b
-        simp only [S, Finset.coe_insert, Finset.coe_singleton, Set.mem_insert_iff,
-          Set.mem_singleton_iff] at ha hb
-        rcases ha with rfl | rfl | rfl | rfl | rfl <;>
-          rcases hb with rfl | rfl | rfl | rfl | rfl <;>
-          simp_all [p, Walk.toSubgraph, Subgraph.coe_adj, Sym2.eq, Sym2.rel_iff'] }
+        constructor
+        · exact p.toSubgraph.adj_sub
+        · intro hab
+          rw [Walk.adj_toSubgraph_iff_mem_edges]
+          simp only [S, Finset.coe_insert, Finset.coe_singleton, Set.mem_insert_iff,
+            Set.mem_singleton_iff] at ha hb
+          rcases ha with rfl | rfl | rfl | rfl | rfl <;>
+            rcases hb with rfl | rfl | rfl | rfl | rfl <;>
+            simp_all [p, Sym2.eq, Sym2.rel_iff'] }
   have htree : (G.induce (S : Set α)).IsTree := by
     exact hiso.isTree_iff.mpr (path_toSubgraph_isTree hp)
+  have hpdeg : ∀ w : p.toSubgraph.verts, p.toSubgraph.coe.degree w ≤ 2 := by
+    intro w
+    have hwSupport : (w : α) ∈ p.support := p.mem_verts_toSubgraph.mp w.property
+    obtain ⟨i, hi, hil⟩ := Walk.mem_support_iff_exists_getVert.mp hwSupport
+    have hlen : p.length = 4 := by simp [p]
+    have hi4 : i ≤ 4 := by simpa [hlen] using hil
+    interval_cases i
+    · have hmem : p.getVert 0 ∈ p.toSubgraph.verts := by
+        apply p.mem_verts_toSubgraph.mpr
+        exact Walk.mem_support_iff_exists_getVert.mpr ⟨0, rfl, by simp [p]⟩
+      have hw : w = ⟨p.getVert 0, hmem⟩ := by
+        apply Subtype.ext
+        exact hi.symm
+      subst w
+      change (p.toSubgraph.neighborSet (p.getVert 0)).ncard ≤ 2
+      rw [show p.getVert 0 = x0 by simp, hp.neighborSet_toSubgraph_startpoint (by simp [p])]
+      simp
+    · have hmem : p.getVert 1 ∈ p.toSubgraph.verts := by
+        apply p.mem_verts_toSubgraph.mpr
+        exact Walk.mem_support_iff_exists_getVert.mpr ⟨1, rfl, by simp [p]⟩
+      have hw : w = ⟨p.getVert 1, hmem⟩ := by
+        apply Subtype.ext
+        exact hi.symm
+      subst w
+      change (p.toSubgraph.neighborSet (p.getVert 1)).ncard ≤ 2
+      rw [hp.neighborSet_toSubgraph_internal (by omega) (by simp [p])]
+      simp
+    · have hmem : p.getVert 2 ∈ p.toSubgraph.verts := by
+        apply p.mem_verts_toSubgraph.mpr
+        exact Walk.mem_support_iff_exists_getVert.mpr ⟨2, rfl, by simp [p]⟩
+      have hw : w = ⟨p.getVert 2, hmem⟩ := by
+        apply Subtype.ext
+        exact hi.symm
+      subst w
+      change (p.toSubgraph.neighborSet (p.getVert 2)).ncard ≤ 2
+      rw [hp.neighborSet_toSubgraph_internal (by omega) (by simp [p])]
+      simp
+    · have hmem : p.getVert 3 ∈ p.toSubgraph.verts := by
+        apply p.mem_verts_toSubgraph.mpr
+        exact Walk.mem_support_iff_exists_getVert.mpr ⟨3, rfl, by simp [p]⟩
+      have hw : w = ⟨p.getVert 3, hmem⟩ := by
+        apply Subtype.ext
+        exact hi.symm
+      subst w
+      change (p.toSubgraph.neighborSet (p.getVert 3)).ncard ≤ 2
+      rw [hp.neighborSet_toSubgraph_internal (by omega) (by simp [p])]
+      simp
+    · have hmem : p.getVert 4 ∈ p.toSubgraph.verts := by
+        apply p.mem_verts_toSubgraph.mpr
+        exact Walk.mem_support_iff_exists_getVert.mpr ⟨4, rfl, by simp [p]⟩
+      have hw : w = ⟨p.getVert 4, hmem⟩ := by
+        apply Subtype.ext
+        exact hi.symm
+      subst w
+      change (p.toSubgraph.neighborSet (p.getVert 4)).ncard ≤ 2
+      have hend : p.getVert 4 = x4 := by simp [p]
+      rw [hend, hp.neighborSet_toSubgraph_endpoint (by simp [p])]
+      simp
   have hdeg : ∀ v : (S : Set α), (G.induce (S : Set α)).degree v ≤ 2 := by
     intro v
     have hdegree :
         (G.induce (S : Set α)).degree v = p.toSubgraph.coe.degree (hiso v) := by
       rw [← card_neighborSet_eq_degree, ← card_neighborSet_eq_degree]
       exact Fintype.card_congr (hiso.mapNeighborSet v)
-    let w : p.toSubgraph.verts := hiso v
-    have hwdeg : p.toSubgraph.coe.degree w ≤ 2 := by
-      have hwSupport : (w : α) ∈ p.support := p.mem_verts_toSubgraph.mp w.property
-      obtain ⟨i, hi, hil⟩ := Walk.mem_support_iff_exists_getVert.mp hwSupport
-      have hlen : p.length = 4 := by simp [p]
-      have hi4 : i ≤ 4 := by simpa [hlen] using hil
-      interval_cases i
-      · have hw : w = ⟨p.getVert 0, hwSupport⟩ := by
-          apply Subtype.ext
-          exact hi.symm
-        subst w
-        change (p.toSubgraph.neighborSet (p.getVert 0)).ncard ≤ 2
-        rw [show p.getVert 0 = x0 by simp, hp.neighborSet_toSubgraph_startpoint (by simp [p])]
-        simp
-      · have hw : w = ⟨p.getVert 1, hwSupport⟩ := by
-          apply Subtype.ext
-          exact hi.symm
-        subst w
-        change (p.toSubgraph.neighborSet (p.getVert 1)).ncard ≤ 2
-        rw [hp.neighborSet_toSubgraph_internal (by omega) (by simp [p])]
-        simp
-      · have hw : w = ⟨p.getVert 2, hwSupport⟩ := by
-          apply Subtype.ext
-          exact hi.symm
-        subst w
-        change (p.toSubgraph.neighborSet (p.getVert 2)).ncard ≤ 2
-        rw [hp.neighborSet_toSubgraph_internal (by omega) (by simp [p])]
-        simp
-      · have hw : w = ⟨p.getVert 3, hwSupport⟩ := by
-          apply Subtype.ext
-          exact hi.symm
-        subst w
-        change (p.toSubgraph.neighborSet (p.getVert 3)).ncard ≤ 2
-        rw [hp.neighborSet_toSubgraph_internal (by omega) (by simp [p])]
-        simp
-      · have hw : w = ⟨p.getVert 4, hwSupport⟩ := by
-          apply Subtype.ext
-          exact hi.symm
-        subst w
-        change (p.toSubgraph.neighborSet (p.getVert 4)).ncard ≤ 2
-        have hend : p.getVert 4 = x4 := by simp [p]
-        rw [hend, hp.neighborSet_toSubgraph_endpoint (by simp [p])]
-        simp
-    exact hdegree.trans_le (by simpa [w] using hwdeg)
+    rw [hdegree]
+    exact hpdeg (hiso v)
   unfold largestInducedPathSize
   apply le_csSup
   · exact ⟨Fintype.card α, by
