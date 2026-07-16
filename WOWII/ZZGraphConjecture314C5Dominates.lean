@@ -103,12 +103,14 @@ lemma exists_adj_cycleVertex_of_inducedC5
         hc_ne (by fin_cases i <;> decide)
       have h_prev_back2 : c (i - 1) ≠ c (i - 2) :=
         hc_ne (by fin_cases i <;> decide)
+      have hbackEdge : G.Adj (c (i - 1)) (c (i - 2)) := by
+        simpa using cycle_back_step_adj hc (i - 1)
       apply hNoP5 x a (c i) (c (i - 1)) (c (i - 2))
       unfold FormsInducedP5
       exact ⟨hxa.ne, hx_cycle_ne i, hx_cycle_ne (i - 1), hx_cycle_ne (i - 2),
         ha_cycle_ne i, ha_cycle_ne (i - 1), ha_cycle_ne (i - 2),
         h_i_prev, h_i_back2, h_prev_back2,
-        hxa, hai, cycle_back_step_adj hc i, cycle_back_step_adj hc (i - 1),
+        hxa, hai, cycle_back_step_adj hc i, hbackEdge,
         hx_cycle i, hx_cycle (i - 1), hx_cycle (i - 2),
         ha_prev, haBack2, cycle_back_two_step_not_adj hc i⟩
     · have h_i_next : c i ≠ c (i + 1) :=
@@ -117,12 +119,14 @@ lemma exists_adj_cycleVertex_of_inducedC5
         hc_ne (by fin_cases i <;> decide)
       have h_next_two : c (i + 1) ≠ c (i + 2) :=
         hc_ne (by fin_cases i <;> decide)
+      have hnextEdge : G.Adj (c (i + 1)) (c (i + 2)) := by
+        simpa using cycle_step_adj hc (i + 1)
       apply hNoP5 x a (c i) (c (i + 1)) (c (i + 2))
       unfold FormsInducedP5
       exact ⟨hxa.ne, hx_cycle_ne i, hx_cycle_ne (i + 1), hx_cycle_ne (i + 2),
         ha_cycle_ne i, ha_cycle_ne (i + 1), ha_cycle_ne (i + 2),
         h_i_next, h_i_two, h_next_two,
-        hxa, hai, cycle_step_adj hc i, cycle_step_adj hc (i + 1),
+        hxa, hai, cycle_step_adj hc i, hnextEdge,
         hx_cycle i, hx_cycle (i + 1), hx_cycle (i + 2),
         ha_next, ha2, cycle_two_step_not_adj hc i⟩
   · obtain ⟨p, hp, hpgeo⟩ := hG.exists_path_of_dist x (c i)
