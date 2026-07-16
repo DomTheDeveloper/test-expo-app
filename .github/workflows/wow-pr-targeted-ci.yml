@@ -34,6 +34,7 @@ jobs:
           repository: DomTheDeveloper/formal-conjectures
           ref: ${{ matrix.ref }}
           path: formal-conjectures
+          fetch-depth: 0
 
       - name: Verify one-commit one-file diff
         working-directory: formal-conjectures
