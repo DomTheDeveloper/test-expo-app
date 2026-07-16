@@ -35,13 +35,20 @@ lemma exists_inducedC5Embedding_of_FormsInducedC5
   have hn31 : ¬G.Adj x3 x1 := fun h => hn13 h.symm
   have hn41 : ¬G.Adj x4 x1 := fun h => hn14 h.symm
   have hn42 : ¬G.Adj x4 x2 := fun h => hn24 h.symm
+  have hcycleTable : ∀ i j : Fin 5, (cycleGraph 5).Adj i j ↔
+      (i = 0 ∧ j = 1) ∨ (i = 1 ∧ j = 0) ∨
+      (i = 1 ∧ j = 2) ∨ (i = 2 ∧ j = 1) ∨
+      (i = 2 ∧ j = 3) ∨ (i = 3 ∧ j = 2) ∨
+      (i = 3 ∧ j = 4) ∨ (i = 4 ∧ j = 3) ∨
+      (i = 4 ∧ j = 0) ∨ (i = 0 ∧ j = 4) := by
+    decide
   let c : Fin 5 → α := ![x0, x1, x2, x3, x4]
   refine ⟨c, ?_, ?_⟩
   · intro i j hij
     fin_cases i <;> fin_cases j <;> simp_all [c]
   · intro i j
-    fin_cases i <;> fin_cases j <;>
-      simp_all [c, cycleGraph_adj', Fin.ext_iff]
+    rw [hcycleTable i j]
+    fin_cases i <;> fin_cases j <;> simp_all [c]
 
 /-- Every indexed cycle vertex has its two expected cycle neighbors. -/
 lemma inducedC5Embedding_adj_pred_succ
