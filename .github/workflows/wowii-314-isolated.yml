@@ -51,12 +51,20 @@ jobs:
           path: formal-conjectures/.lake/build
           key: fc-build-${{ runner.os }}-b2e608fc52d765510915a244bb69b1a2741acc3c-v1
 
-      - name: Build upstream target modules
+      - name: Build missing upstream target modules
         working-directory: formal-conjectures
+        shell: bash
         run: |
-          lake build \
-            FormalConjectures.WrittenOnTheWallII.GraphConjecture143 \
-            FormalConjectures.WrittenOnTheWallII.GraphConjecture314
+          set -euo pipefail
+          target143=.lake/build/lib/lean/FormalConjectures/WrittenOnTheWallII/GraphConjecture143.olean
+          target314=.lake/build/lib/lean/FormalConjectures/WrittenOnTheWallII/GraphConjecture314.olean
+          if [[ ! -f "$target143" || ! -f "$target314" ]]; then
+            lake build \
+              FormalConjectures.WrittenOnTheWallII.GraphConjecture143 \
+              FormalConjectures.WrittenOnTheWallII.GraphConjecture314
+          else
+            echo "Pinned upstream targets restored from cache."
+          fi
 
       - name: Prepare campaign tree
         run: |
