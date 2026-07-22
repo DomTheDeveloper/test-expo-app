@@ -32,7 +32,7 @@ jobs:
           git clone --depth 1 --branch a261865-research \
             https://github.com/DomTheDeveloper/formal-conjectures.git proof
           cd proof
-          test "$(git rev-parse HEAD)" = "6f05943953af5d1276ea29c00e36020bf2b0c813"
+          test "$(git rev-parse HEAD)" = "46cbbd696ef2df77558b2b32c01e94a67f3ed87c"
 
       - name: Install Lean 4.27
         shell: bash
