@@ -15,8 +15,8 @@ permissions:
   contents: read
 
 concurrency:
-  group: a261865-external-final-audit-macos
-  cancel-in-progress: true
+  group: a261865-external-final-audit-macos-b7900bde
+  cancel-in-progress: false
 
 jobs:
   audit:
@@ -25,14 +25,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Clone exact proof head
+      - name: Fetch immutable proof commit
         shell: bash
         run: |
           set -euo pipefail
-          git clone --depth 1 --branch a261865-research \
-            https://github.com/DomTheDeveloper/formal-conjectures.git proof
+          mkdir proof
           cd proof
-          test "$(git rev-parse HEAD)" = "46cbbd696ef2df77558b2b32c01e94a67f3ed87c"
+          git init
+          git remote add origin https://github.com/DomTheDeveloper/formal-conjectures.git
+          git fetch --depth 1 origin b7900bdec52936ebc312dd763ed9bbfd78d3f7f0
+          git checkout --detach FETCH_HEAD
+          test "$(git rev-parse HEAD)" = "b7900bdec52936ebc312dd763ed9bbfd78d3f7f0"
 
       - name: Install Lean 4.27
         shell: bash
@@ -62,7 +65,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: a261865-external-final-audit-macos
+          name: a261865-b7900bde-final-audit-macos
           path: |
             cache-macos.log
             lean-final-macos.log
