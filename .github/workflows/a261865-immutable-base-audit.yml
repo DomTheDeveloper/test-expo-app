@@ -1,0 +1,65 @@
+name: A261865 immutable base audit
+
+on:
+  push:
+    branches: [claude/react-native-expo-ghpages-pgXVQ]
+    paths:
+      - '.github/workflows/a261865-immutable-base-audit.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: a261865-immutable-base-b7900bde
+  cancel-in-progress: false
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Fetch immutable proof commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          git init proof
+          cd proof
+          git remote add origin https://github.com/DomTheDeveloper/formal-conjectures.git
+          git fetch --depth 1 origin b7900bdec52936ebc312dd763ed9bbfd78d3f7f0
+          git checkout --detach FETCH_HEAD
+          test "$(git rev-parse HEAD)" = "b7900bdec52936ebc312dd763ed9bbfd78d3f7f0"
+
+      - name: Install Lean 4.27
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fsSL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh \
+            | sh -s -- -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+          "$HOME/.elan/bin/elan" toolchain install leanprover/lean4:v4.27.0
+
+      - name: Fetch Mathlib cache
+        shell: bash
+        working-directory: proof
+        run: |
+          set -o pipefail
+          lake exe cache get 2>&1 | tee ../cache.log
+
+      - name: Compile exact theorem and audit axioms
+        shell: bash
+        working-directory: proof
+        run: |
+          set -o pipefail
+          lake env lean FormalConjectures/OEIS/261865FinalAudit.lean 2>&1 | tee ../lean-final.log
+          ! grep -q sorryAx ../lean-final.log
+
+      - name: Upload complete logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: a261865-b7900bde-immutable-base-audit
+          path: |
+            cache.log
+            lean-final.log
+          if-no-files-found: ignore
