@@ -6,13 +6,17 @@ on:
     branches: [claude/react-native-expo-ghpages-pgXVQ]
     paths:
       - '.github/workflows/a261865-immutable-base-audit.yml'
+  pull_request:
+    branches: [claude/react-native-expo-ghpages-pgXVQ]
+    paths:
+      - '.github/workflows/a261865-immutable-base-audit.yml'
   workflow_dispatch:
 
 permissions:
   contents: read
 
 concurrency:
-  group: a261865-immutable-base-b7900bde
+  group: a261865-immutable-base-b7900bde-${{ github.event_name }}
   cancel-in-progress: false
 
 jobs:
