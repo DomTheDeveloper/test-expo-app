@@ -20,49 +20,53 @@ concurrency:
 
 jobs:
   audit:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
 
       - name: Clone exact proof head
-        shell: bash
+        shell: pwsh
         run: |
-          set -euo pipefail
-          git clone --depth 1 --branch a261865-research \
-            https://github.com/DomTheDeveloper/formal-conjectures.git proof
-          cd proof
-          test "$(git rev-parse HEAD)" = "46cbbd696ef2df77558b2b32c01e94a67f3ed87c"
+          $ErrorActionPreference = 'Stop'
+          git clone --depth 1 --branch a261865-research https://github.com/DomTheDeveloper/formal-conjectures.git proof
+          Set-Location proof
+          $head = git rev-parse HEAD
+          if ($head -ne '46cbbd696ef2df77558b2b32c01e94a67f3ed87c') {
+            throw "Unexpected proof head: $head"
+          }
 
       - name: Install Lean 4.27
-        shell: bash
+        shell: pwsh
         run: |
-          set -euo pipefail
-          curl -fsSL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh \
-            | sh -s -- -y --default-toolchain none
-          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
-          "$HOME/.elan/bin/elan" toolchain install leanprover/lean4:v4.27.0
+          $ErrorActionPreference = 'Stop'
+          Invoke-WebRequest https://raw.githubusercontent.com/leanprover/elan/master/elan-init.ps1 -OutFile elan-init.ps1
+          powershell -ExecutionPolicy Bypass -File .\elan-init.ps1 -y --default-toolchain none
+          "$env:USERPROFILE\.elan\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          & "$env:USERPROFILE\.elan\bin\elan.exe" toolchain install leanprover/lean4:v4.27.0
 
       - name: Fetch Mathlib cache
-        shell: bash
+        shell: pwsh
         working-directory: proof
         run: |
-          set -o pipefail
-          lake exe cache get 2>&1 | tee ../cache.log
+          $ErrorActionPreference = 'Continue'
+          lake exe cache get 2>&1 | Tee-Object -FilePath ..\cache.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
       - name: Compile exact theorem and audit axioms
-        shell: bash
+        shell: pwsh
         working-directory: proof
         run: |
-          set -o pipefail
-          lake env lean FormalConjectures/OEIS/261865FinalAudit.lean 2>&1 | tee ../lean-final.log
-          ! grep -q sorryAx ../lean-final.log
+          $ErrorActionPreference = 'Continue'
+          lake env lean FormalConjectures/OEIS/261865FinalAudit.lean 2>&1 | Tee-Object -FilePath ..\lean-final.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          if (Select-String -Path ..\lean-final.log -Pattern 'sorryAx' -Quiet) { exit 1 }
 
       - name: Upload logs
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: a261865-external-final-audit
+          name: a261865-external-final-audit-windows
           path: |
             cache.log
             lean-final.log
