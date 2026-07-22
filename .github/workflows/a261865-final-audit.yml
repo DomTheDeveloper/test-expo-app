@@ -5,6 +5,10 @@ on:
     branches: [a261865-final-audit-scratch]
     paths:
       - '.github/workflows/a261865-final-audit.yml'
+  pull_request:
+    branches: [claude/react-native-expo-ghpages-pgXVQ]
+    paths:
+      - '.github/workflows/a261865-final-audit.yml'
   workflow_dispatch:
 
 permissions:
