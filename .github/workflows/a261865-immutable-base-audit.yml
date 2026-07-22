@@ -1,4 +1,5 @@
 # Immutable verification target: formal-conjectures@b7900bde
+# Trusted PR trigger: 2026-07-22
 name: A261865 immutable base audit
 
 on:
